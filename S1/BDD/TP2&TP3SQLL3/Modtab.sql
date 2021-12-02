@@ -1,0 +1,13 @@
+prompt "Début des modifications ..."
+
+ALTER TABLE ABONNE ADD(
+	DATE_NAI DATE,
+	TYPE_AB VARCHAR(16) CHECK (TYPE_AB IN('ADULTE', 'ENFANT')),
+	CAT_AB VARCHAR(16) CHECK (CAT_AB IN('REGULIER', 'OCCASIONNEL', 'A PROBLEME', 'EXCLU'))	
+);
+
+ALTER TABLE ABONNE(
+	MODIFY TARIF NUMERIC(5,0)
+);
+
+prompt "Modifications terminées"
