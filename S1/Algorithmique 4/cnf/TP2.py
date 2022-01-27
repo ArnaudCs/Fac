@@ -6,6 +6,9 @@ Created on Wed Oct 13 21:55:02 2021
 @author: arnaud.cossu@etu.umontpellier.fr
 """
 
+from datetime import datetime
+
+
 true = True
 false = False
 #Exercice 1
@@ -179,6 +182,8 @@ def ecriture_sudoku(G, n, nom) :
 
 G = lecture_sudoku("sudoku-3-moyen-7")[0]
 ecriture_sudoku(G, 3, "philippe")
+S1 = lecture_sudoku("sudoku-3-facile-2")
+ecriture_sudoku(S1[0], S1[1], "zjohn")
                 
 print("\nQuestion 1.3")
 print("---------------")
@@ -233,7 +238,7 @@ print("---------------")
 def sudoku(nom):
     G = lecture_sudoku(nom)
     print(nom, ":")
-    affiche(G[0], G[1])
+    affiche_sudoku(G[0], G[1])
     print("résolu : ")
     temps1 = datetime.now()
     affiche_sudoku(BT_sudoku(G[0], G[1], 0), G[1])
@@ -310,17 +315,6 @@ def valeur(m, D, p) :
         a = p[x]
         m[i] = a
     return m
-    
-
-def affr(Q) :
-    for i in range(len(Q)) : 
-        for j in range(len(Q)) :
-            if Q[i]==j :
-                print("X",end=" ")
-            else :
-                print("_",end=" ")
-        print("")
-    print("")
                         
 print("\nQuestion 4.1")
 print("---------------")
@@ -334,8 +328,8 @@ def affichage_reine(Q) :
         print("")
     print("")
 
-print("aff_reine de [1, 3, -1, -1] :")
-aff_reine([1, 3, -1, -1])
+print("affichage_reine de [1, 3, -1, -1] :")
+affichage_reine([1, 3, -1, -1])
 
 print("\nQuestion 4.2")
 print("---------------")
@@ -383,7 +377,7 @@ def reine(n):
     Q.append(-1)
   S = placement_reines(Q,0)
   if isinstance(S, list):
-    aff_reine(S)
+    affichage_reine(S)
   else:
     print("Pas possible")
 

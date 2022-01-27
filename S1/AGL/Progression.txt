@@ -4,9 +4,9 @@ TP1 : Terminé, récuperer les images sur l'ipad et le début du code TER
 
 TP2 : Terminé, récupérer le projet TER et refaire les commandes GIT dans une démo
 
-TP3 : Classe courriel faite, tests à faire en Junit 5
+TP3 : 
 
-TP4 : Mutation réalisée normalement bonne, Test de la poste fait, faire la mutation sur TER
+TP4 : Mutation réalisé normalement bon, Test de la poste fait, faire la mutation sur TER
 
 TP5 : Apparemment terminé
 

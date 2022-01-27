@@ -1,0 +1,6 @@
+1 - Seuillage au format pgm
+c) on commence par compiler le programme g++ test_grey.cpp -o test_grey et on le lance avec ./test_grey image1nom image1nomsortie seuil que l'on veut
+d) Plus le seuil est haut, plus la photo est noire, plus c'est bas, moins il y a de noir. 
+
+2 - Seuillage avec plusieurs niveaux: 
+

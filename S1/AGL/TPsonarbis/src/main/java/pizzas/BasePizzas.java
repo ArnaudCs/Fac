@@ -1,13 +1,15 @@
 package pizzas;
 
+import java.security.SecureRandom;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Random;
 
 public class BasePizzas {
 	private ArrayList<Ingredient> ingredientsDisponibles=new ArrayList<>();
 	private HashMap<String, Pizza> menu=new HashMap<>();
+	private SecureRandom rand = new SecureRandom();
+
 
 	public BasePizzas() {
 		initIngredients();
@@ -68,17 +70,14 @@ public class BasePizzas {
 		return menu.get(nom);
 	}
 
-
 	public Pizza createSurpriseWhitePizza() {
 		Pizza p=new Pizza("Surprise blanche", 13);
 		int nbIng=5;
-		for (int i=0; i<nbIng;i++) {
-			Random rand=new Random();
+		while (nbIng > 0) {
 			int ingpos=rand.nextInt(ingredientsDisponibles.size());
-			if (ingredientsDisponibles.get(i).getNom()=="crème fraiche")
-				i = i-1;
-			else {
+			if (!ingredientsDisponibles.get(ingpos).getNom().equals("crème fraiche")) {
 				p.ajoutIngredient(ingredientsDisponibles.get(ingpos));
+				nbIng--;
 			}
 		}
 		return p;
@@ -86,9 +85,8 @@ public class BasePizzas {
 
 	public boolean exists(String ingName) {
 		for (Ingredient i:ingredientsDisponibles) {
-			if((i.getNom().equals(ingName))) {
-				
-			}
+			if (i.getNom().equals(ingName))
+				return true;
 		}
 		return false;
 	}
@@ -98,15 +96,9 @@ public class BasePizzas {
 		for (Pizza p:menu.values()) {
 			if (!p.getNom().startsWith("surprise")) {
 				for (Ingredient i:p.ingredients()) {
-					var trouve=false;
-					for (Ingredient id:ingredientsDisponibles) {
-						if (id.equals(i)) {
-							trouve=true;
-							break;
-						}
-					}
-					if (!trouve) {
+					if(!ingredientsDisponibles.contains(i)) {
 						res.add(p);
+						break;
 					}
 				}
 			}

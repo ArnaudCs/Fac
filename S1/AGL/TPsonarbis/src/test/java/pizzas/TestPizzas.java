@@ -32,5 +32,20 @@ class TestPizzas {
 		p.ajoutIngredient(new Ingredient("brocolis", true));
 		assertEquals(oldSize+1, p.ingredients().length);
 	}
+	
+	@Test
+	void testPizzaEquals() {
+		Pizza pi = new Pizza("marga", 13);
+		Pizza pi2 = new Pizza("marga", 13);
+		assertEquals(pi, pi2);
+	}
+	
+	@Test
+	void testPizzaNotEquals() {
+		Pizza pi = new Pizza("marga", 13);
+		Pizza pi2 = new Pizza("marga", 22);
+		assertNotEquals(pi, pi2);
+	}
+
 
 }

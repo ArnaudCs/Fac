@@ -1,0 +1,51 @@
+Parameters A B C : Prop.
+
+Lemma ex1_1 : A -> B -> A.
+Proof.
+  intros.
+  assumption.
+Qed.
+
+Lemma ex1_2 : (A -> B -> C) -> (A -> B) -> A -> C.
+Proof.
+  intros.
+  apply H.
+  assumption.
+  apply H0.
+  assumption.
+Qed.
+  
+Lemma ex1_3 : A /\ B -> B. 
+Proof.
+  intros.
+  apply H.
+Qed.
+
+Lemma ex1_4 : B -> A \/ B.
+Proof.
+  intros.
+  right.
+  assumption.
+Qed.
+
+Lemma ex1_5 : (A \/ B) -> (A -> C) -> (B -> C) -> C.
+Proof.
+  intros.
+
+Parameters x y : Prop. 
+
+Lemma ex2_1 : (forall x : (P x) -> (exists y : (P y) \/ (Q y))).
+
+
+
+
+
+
+
+
+
+
+
+
+
+
