@@ -47,30 +47,28 @@ int main(int argc, char *argv[]) {
   /* Etape 2 : Nommer la socket du client */
   printf("Client : creation de la socket réussie \n");
   struct sockaddr_in client;
-  ad.sin_family = AF_INET;
-  ad.sin_addr.s_addr = INADDR_ANY;
-  ad.sin_port = htons((short) atoi(argv[3]));
+  client.sin_family = AF_INET;
+  client.sin_addr.s_addr = INADDR_ANY;
+  client.sin_port = htons((short) atoi(argv[3]));
 
-  int res = bind(ds, (struct sockaddr*)&ad, sizeof(client));
+  int res = bind(ds, (struct sockaddr*)&client, sizeof(client));
 
   //cas d'erreur
   
   if (res == -1) {
     perror("Client : pb nommage socket :");
     close(ds);
-    exit(1) 
+    exit(1);
   }
 
   printf("bind fait, adresse + port : %i:%i", client.sin_addr.s_addr, client.sin_port);
-  getsockname(ds, (struct sockaddr*) &ad, &taille);
-  printf("Nommage de la socket cliente réussie %i:%i\n", ad.sin_addr.s_addr, ad.sin_port);
 
   /* Etape 3 : Désigner la socket du serveur */
 
   struct sockaddr_in serveur;
-  ad.sin_family = AF_INET;
-    ad.sin_port = htons((short) atoi(argv[2]));
-  ad.sin_addr.s_addr = inet_addr(argv[1]);
+  serveur.sin_family = AF_INET;
+  serveur.sin_port = htons((short) atoi(argv[2]));
+  serveur.sin_addr.s_addr = inet_addr(argv[1]);
   socklen_t lad_serveur = sizeof(serveur);
 
   /* Etape 4 : envoyer un message au serveur  (voir sujet pour plus de détails)*/
@@ -80,7 +78,7 @@ int main(int argc, char *argv[]) {
   if (res == -1) {
     perror("Client : pb envoie message :");
     close(ds);
-    exit(1)
+    exit(1);
   }
   
   /* Etape 5 : recevoir un message du serveur (voir sujet pour plus de détails)*/
@@ -91,7 +89,7 @@ int main(int argc, char *argv[]) {
   if (res == -1){
     printf("Erreur lors de la réception");
     close(ds);
-    exit(1)
+    exit(1);
   }
   
   printf("Reponse du serveur : %i", recu);
