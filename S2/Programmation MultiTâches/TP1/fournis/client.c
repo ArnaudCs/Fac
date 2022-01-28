@@ -39,10 +39,6 @@ int main(int argc, char *argv[]) {
   /* J'ajoute des traces pour comprendre l'exécution et savoir
      localiser des éventuelles erreurs */
   printf("Client : creation de la socket réussie \n");
-
-  char* ip_serveur = argv[1];
-  int port_serveur = argv[2];
-  int port = atoi(argv[3]);
   
   // Je peux tester l'exécution de cette étape avant de passer à la
   // suite. Faire de même pour la suite : n'attendez pas de tout faire
@@ -50,63 +46,55 @@ int main(int argc, char *argv[]) {
   
   /* Etape 2 : Nommer la socket du client */
   printf("Client : creation de la socket réussie \n");
-  struct sockaddr_in ad;
+  struct sockaddr_in client;
   ad.sin_family = AF_INET;
   ad.sin_addr.s_addr = INADDR_ANY;
-  ad.sin_port = htons((short) port);
-  int res = bind(ds, (struct sockaddr*)&ad, sizeof(ad));
+  ad.sin_port = htons((short) atoi(argv[3]));
+
+  int res = bind(ds, (struct sockaddr*)&ad, sizeof(client));
+
   //cas d'erreur
+  
   if (res == -1) {
     perror("Client : pb nommage socket :");
-    exit(1); 
+    close(ds);
+    exit(1) 
   }
-  
-  int taille = sizeof(ad);
+
+  printf("bind fait, adresse + port : %i:%i", client.sin_addr.s_addr, client.sin_port);
   getsockname(ds, (struct sockaddr*) &ad, &taille);
-  printf("%i\n", ntohs((short) ad.sin_port));
-  
   printf("Nommage de la socket cliente réussie %i:%i\n", ad.sin_addr.s_addr, ad.sin_port);
 
   /* Etape 3 : Désigner la socket du serveur */
 
-  struct sockaddr_in ad_srv;
+  struct sockaddr_in serveur;
   ad.sin_family = AF_INET;
+    ad.sin_port = htons((short) atoi(argv[2]));
   ad.sin_addr.s_addr = inet_addr(argv[1]);
-  ad.sin_port = htons((short) atoi(argv[2]));
-  printf("Désignation de la socket coté serveur réussie %i:%i\n", ad_srv.sin_addr.s_addr, ad_srv.sin_port);
-
+  socklen_t lad_serveur = sizeof(serveur);
 
   /* Etape 4 : envoyer un message au serveur  (voir sujet pour plus de détails)*/
-  char message [200];
-  printf("Envoyez un message au serveur (200 charactères)\n");
-  fgets(message, 200);
-
-  size_t len_msg = strlen(message);
-  socklen_t len_adr = sizeof(struct sockaddr_in);
-  
-  res = sendto(ds, message, len_msg + 1, 0, (struct sockaddr*) &ad_srv, len_adr);
+  char* message = "test côté client";
+  int conf = sendto(ds, (const char *) message, strlen(message)+1, 0, (const struct sockaddr*)&serveur, lad_serveur);
 
   if (res == -1) {
     perror("Client : pb envoie message :");
-    exit(1); 
-  }
-  else if(res<=len_msg) {
-    printf("Client : seul %i octet ont été envoyés");
+    close(ds);
+    exit(1)
   }
   
   /* Etape 5 : recevoir un message du serveur (voir sujet pour plus de détails)*/
   printf("Attente du message en provenance du serveur...\n");
-
-  struct sockaddr_in sock_srv;
-  res = recvfrom(ds, message, sizeof(message), 0, (struct sockaddr*) &sock_srv, &len_adr);
+  int recu;
+  int recu_s = recvfrom(ds, &recu, sizeof(int), 0, (struct sockaddr *) &serveur, &lad_serveur);
 
   if (res == -1){
     printf("Erreur lors de la réception");
+    close(ds);
+    exit(1)
   }
-  else {
-    printf("Client : message reçu du serveur \n");
-    printf("\t\t%s", message);
-  }
+  
+  printf("Reponse du serveur : %i", recu);
   
   /* Etape 6 : fermer la socket (lorsqu'elle n'est plus utilisée)*/
   int close (ds);
