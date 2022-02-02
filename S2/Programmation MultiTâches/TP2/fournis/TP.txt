@@ -1,0 +1,1 @@
+Le seuls messages d'erreurs en UDP sont si les adresses sont mal formés ou si on met l'adresse d'une autre variable. 
