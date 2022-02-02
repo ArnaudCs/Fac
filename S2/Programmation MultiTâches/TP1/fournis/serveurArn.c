@@ -43,12 +43,12 @@ int main(int argc, char *argv[]) {
   // avant de tester.
   
   /* Etape 2 : Nommer la socket du seveur */
-  struct sockaddr_in serveur;
-  serveur.sin_family = AF_INET;
-  serveur.sin_addr.s_addr = INADDR_ANY;
-  serveur.sin_port = htons((short) atoi(argv[1]));
+  struct sockaddr_in ad;
+  ad.sin_family = AF_INET;
+  ad.sin_addr.s_addr = INADDR_ANY;
+  ad.sin_port = htons((short) atoi(argv[1]));
 
-  int res = bind(ds, (struct sockaddr*) &serveur, sizeof(serveur));
+  int res = bind(ds, (struct sockaddr*) &ad, sizeof(ad));
 
   if (res  == -1){
      perror("erreur bind \n");
@@ -56,31 +56,37 @@ int main(int argc, char *argv[]) {
      exit(1);
   }
 
-  printf("bind fait, adresse + port %i:%i \n",serveur.sin_addr.s_addr,serveur.sin_port); 
+  printf("bind fait, adresse + port %i:%i \n",ad.sin_addr.s_addr,ad.sin_port); 
 
-
-  struct sockaddr_in client;
-  serveur.sin_family = AF_INET;
-  serveur.sin_addr.s_addr = INADDR_ANY;
-  serveur.sin_port = htons((short) atoi(argv[]));
-  socklen_t lad_client = sizeof(client);
  
   /* Etape 4 : recevoir un message du client (voir sujet pour plus de détails)*/
-  int recu;
-  int recu_s = recvfrom(ds, &recu, sizeof(int), 0, (struct sockaddr *) &client, &lad_client);
 
-  if (recu_s == -1){
-      perror("pb recvfrom \n");
-      close(ds);
-      exit(1);
+  struct sockaddr_in sockClient;
+  socklen_t lgAdr;
+  ad.sin_family = AF_INET;
+  char str[INET_ADDRSTRLEN];
+  char *msgRenvoi = "Merci pour ton message";
+  char msg[1000];
+  int sizemsg = 1000;
+  res = -1;
+  while(1){
+	res = recvfrom(ds, &msg, sizemsg, 0, (struct sockaddr *) &sockClient, &lgAdr);
+        inet_ntop(AF_INET, &sockClient.sin_addr, str, INET_ADDRSTRLEN);
+	printf("Message de longueur %i reçu de l'adresse %s\n", res, str);
+	char type = msg[0];
+	
+	char len[100];
+        sprintf(len, "Taille du message reçu par le serveur : %zu\n", strlen(msg));
+        if (sendto(ds, len, strlen(len) + 1, 0, (const struct sockaddr*)&sockClient, lgAdr) == -1) {
+            perror("[SERVEUR] Erreur lors du retour au client ");
+            exit(5);
+        }
   }
-
-  printf("reponse du client : %i \n", recu);
   
   /* Etape 5 : envoyer un message au serveur (voir sujet pour plus de détails)*/
 
   char* message = "test serveur-client (cote serveur)";
-  int conf = sendto(ds, (const char *) message, strlen(message)+1, 0, (const struct sockaddr*)&client, lad_client);
+  int conf = sendto(ds, (const char *) message, strlen(message)+1, 0, (const struct sockaddr*)&sockClient, lgAdr);
 
   if (conf == -1){
       perror("message non envoyé \n");
