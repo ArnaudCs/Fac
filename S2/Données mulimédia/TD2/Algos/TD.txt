@@ -1,0 +1,4 @@
+1) Seuil selon 25 150 et 225
+2) ON met les pixels inf  au seuil à 255 et les autres à 0
+3) écrire érosion.cpp
+
