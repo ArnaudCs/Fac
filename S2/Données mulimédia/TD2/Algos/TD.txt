@@ -1,4 +1,10 @@
 1) Seuil selon 25 150 et 225
 2) ON met les pixels inf  au seuil à 255 et les autres à 0
-3) écrire érosion.cpp
-
+3) écrire érosion.cpp on prend le minimum dans les alentours voir res2
+4) dilatation on prend le max aux alentours voir res3
+5) pour la fermeture je créer une deuxième image imgOut2 et je fais tout d'abord une dilatation puis une érosion voir res4
+6) je fais l'inverse pour l'ouverture en faisant une érosion puis une dilatation voir res5
+7) je réalise l'enchainement des érosions et dilatations et j'obtiens quelque chose de cubique. voir resalph
+segmentation d'image 
+--------------------
+8) 

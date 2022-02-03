@@ -10,7 +10,7 @@ int main(int argc, char* argv[])
   
   if (argc != 3) 
      {
-       printf("Usage: ImageIn.pgm ImageOut.pgm Seuil \n"); 
+       printf("Usage: ImageIn.pgm ImageOut.pgm\n"); 
        exit (1) ;
      }
    
@@ -25,25 +25,20 @@ int main(int argc, char* argv[])
    allocation_tableau(ImgIn, OCTET, nTaille);
    lire_image_pgm(cNomImgLue, ImgIn, nH * nW);
    allocation_tableau(ImgOut, OCTET, nTaille);
-  
-   //   for (int i=0; i < nTaille; i++)
-   // {
-   //  if ( ImgIn[i] < S) ImgOut[i]=0; else ImgOut[i]=255;
-   //  }
 
-
-  for (int i=0; i < nH; i++)
-    for (int j=0; j < nW; j++)
-      { 
-        if(i == 0) ImgOut[i*nW+j] = fmin(ImgIn[(i+1)*nW+j], fmin(ImgIn[i*nW+(j-1)], ImgIn[i*nW+(j+1)]));
-        else if (j == 0) ImgOut[i*nW+j] = fmin(fmin(ImgIn[(i-1)*nW+j], ImgIn[(i+1)*nW+j]), ImgIn[i*nW+(j+1)]);
-        else if (i == nH) ImgOut[i*nW+j] = fmin(ImgIn[(i-1)*nW+j], fmin(ImgIn[i*nW+(j-1)], ImgIn[i*nW+(j+1)]));
-        else if (j == nW) ImgOut[i*nW+j] = fmin(fmin(ImgIn[(i-1)*nW+j], ImgIn[(i+1)*nW+j]), ImgIn[i*nW+(j-1)]);
-        else ImgOut[i*nW+j] = fmin(fmin(ImgIn[(i-1)*nW+j], ImgIn[(i+1)*nW+j]), fmin(ImgIn[i*nW+(j-1)], ImgIn[i*nW+(j+1)])); 
-      }
-
+    for (int i=1; i < nH-1; i++) {
+        for (int j=1; j < nW-1; j++) {
+            if(ImgIn[(i-1)*nW+(j-1)] == 0 || ImgIn[(i-1)*nW+j] == 0 || ImgIn[(i-1)*nW+(j+1)] == 0 || ImgIn[(i)*nW+(j-1)] == 0 || ImgIn[(i)*nW+(j+1)] == 0 || ImgIn[(i+1)*nW+(j-1)] == 0 || ImgIn[(i+1)*nW+j] == 0 || ImgIn[(i+1)*nW+(j+1)] == 0) {
+                ImgOut[i*nW+j]= 0;
+            }
+            else {
+                ImgOut[i*nW+j]=255;
+            }
+        }
+    }
 
    ecrire_image_pgm(cNomImgEcrite, ImgOut,  nH, nW);
    free(ImgIn); free(ImgOut);
+
    return 1;
 }
