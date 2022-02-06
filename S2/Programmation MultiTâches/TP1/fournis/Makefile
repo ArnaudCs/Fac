@@ -6,8 +6,8 @@
 BIN=bin/client  bin/serveur
 
 # liste des fichiers sources 
-SRCS0=clientArn.c
-SRCS1=serveurArn.c
+SRCS0=client.c
+SRCS1=serveur.c
 
 default: $(BIN)
 

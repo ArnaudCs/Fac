@@ -1,95 +1,113 @@
-#include <stdio.h>
-#include <netdb.h>
 #include <netinet/in.h>
-#include <stdlib.h>
-#include <string.h>
-#include <sys/socket.h>
+#include <stdio.h> 
+#include <unistd.h>
 #include <sys/types.h>
-#define MAX 80
-#define PORT 8080
-#define SA struct sockaddr
+#include <sys/socket.h>
+#include <netdb.h>
+#include <stdlib.h>
+#include <arpa/inet.h>
+#include <string.h>
 
-// Function designed for chat between client and server.
-void func(int connfd)
-{
-	char buff[MAX];
-	int n;
-	// infinite loop for chat
-	for (;;) {
-		bzero(buff, MAX);
+/* Programme serveur */
 
-		// read the message from client and copy it in buffer
-		read(connfd, buff, sizeof(buff));
-		// print buffer which contains the client contents
-		printf("From client: %s\t To client : ", buff);
-		bzero(buff, MAX);
-		n = 0;
-		// copy server message in the buffer
-		while ((buff[n++] = getchar()) != '\n')
-			;
+int main(int argc, char *argv[]) {
+   /* Je passe en paramètre le numéro de port qui sera donné à la socket créée plus loin.*/
 
-		// and send that buffer to client
-		write(connfd, buff, sizeof(buff));
+   /* Je teste le passage de parametres. Le nombre et la nature des
+      paramètres sont à adapter en fonction des besoins. Sans ces
+      paramètres, l'exécution doit être arrétée, autrement, elle
+      aboutira à des erreurs.*/
+   if (argc != 2){
+      printf("Utilisation : %s [port_serveur]\n", argv[0]);
+      exit(1);
+   }
 
-		// if msg contains "Exit" then server exit and chat ended.
-		if (strncmp("exit", buff, 4) == 0) {
-			printf("Server Exit...\n");
-			break;
-		}
-	}
+   /* Etape 1 : créer une socket */   
+   int ds = socket(PF_INET, SOCK_STREAM, 0);
+
+   /* /!\ : Il est indispensable de tester les valeurs de retour de
+      toutes les fonctions et agir en fonction des valeurs
+      possibles. Voici un exemple */
+   if (ds == -1) {
+      perror("[SERVEUR] Erreur lors de la création de la socket ");
+      exit(1); // je choisis ici d'arrêter le programme car le reste
+      // dépendent de la réussite de la création de la socket.
+   }
+
+   /* J'ajoute des traces pour comprendre l'exécution et savoir
+      localiser des éventuelles erreurs */
+   printf("[SERVEUR] Création de la socket réussie.\n");
+
+   // Je peux tester l'exécution de cette étape avant de passer à la
+   // suite. Faire de même pour la suite : n'attendez pas de tout faire
+   // avant de tester.
+
+   /* Etape 2 : Nommer la socket du serveur */
+   struct sockaddr_in ad;
+   socklen_t len = sizeof(ad);
+   ad.sin_family = AF_INET;            // IPv4
+   ad.sin_addr.s_addr = INADDR_ANY;
+   
+   //passer la socket en mode écoute
+
+   // Nommage manuel
+   ad.sin_port = htons(atoi(argv[1]));
+
+   int res = bind(ds, (struct sockaddr *)&ad, sizeof(ad));
+   if (res == -1) {
+      perror("[SERVEUR] Erreur lors du nommage de la socket ");
+      exit(1);
+   }
+
+   // Récupération de l'adresse et du numéro de port
+   if (getsockname(ds, (struct sockaddr *)&ad, &len) == -1) {
+      perror("[SERVEUR] Erreur lors du nommage automatique de la socket ");
+      exit(1);
+   }
+
+   printf("[SERVEUR] En cours d'exécution : %s:%d\n", inet_ntoa(ad.sin_addr), ntohs(ad.sin_port));
+   
+   while (1) {
+      //passer la socket en mode écoute
+      res = listen(ds, 10);
+      if (res == -1){
+	   printf("Erreur lors du passage en mode écoute");
+      }
+      struct sockaddr_in sockClient;
+      socklen_t lgAdr = sizeof(struct sockaddr_in);
+      int dsclient = accept(ds, (struct sockaddr*)&sockClient, &lgAdr);
+      
+      
+      /* Etape 4 : recevoir un message du client (voir sujet pour plus de détails)*/
+      int msgSize = 100;
+      char msg[100];
+      ssize_t res = recv(ds, msg, msgSize, 0);
+      if (res == -1) {
+        perror("[SERVEUR] Erreur lors de la réception du message ");
+        exit(1);
+      }
+
+      if (msg == NULL) {
+         perror("[SERVEUR] Erreur lors de la réception du message ");
+         exit(1); 
+      }
+      printf("[SERVEUR] Message reçu : %s\n", msg);
+      printf("[SERVEUR] Adresse du client : %s:%i\n", inet_ntoa(sockClient.sin_addr), ntohs(sockClient.sin_port));
+    
+        /* Etape 5 : envoyer un message au serveur (voir sujet pour plus de détails) */
+        char len[100];
+        sprintf(len, "Taille du message reçu par le serveur : %zu\n", strlen(msg));
+        if (send(ds, len, strlen(len) + 1, 0) == -1) {
+            perror("[SERVEUR] Erreur lors du retour au client ");
+            exit(5);
+        }
+    }
+
+   /* Etape 6 : fermer la socket (lorsqu'elle n'est plus utilisée)*/
+   
+   // On pourrait aussi faire close() mais shutdown() est plus sécurisée et plus pratique à manipuler.
+   shutdown(ds, SHUT_RDWR);
+
+   printf("[SERVEUR] Sortie.\n");
+   return 0;
 }
-
-// Driver function
-int main()
-{
-	int sockfd, connfd, len;
-	struct sockaddr_in servaddr, cli;
-
-	// socket create and verification
-	sockfd = socket(AF_INET, SOCK_STREAM, 0);
-	if (sockfd == -1) {
-		printf("socket creation failed...\n");
-		exit(0);
-	}
-	else
-		printf("Socket successfully created..\n");
-	bzero(&servaddr, sizeof(servaddr));
-
-	// assign IP, PORT
-	servaddr.sin_family = AF_INET;
-	servaddr.sin_addr.s_addr = htonl(INADDR_ANY);
-	servaddr.sin_port = htons(PORT);
-
-	// Binding newly created socket to given IP and verification
-	if ((bind(sockfd, (SA*)&servaddr, sizeof(servaddr))) != 0) {
-		printf("socket bind failed...\n");
-		exit(0);
-	}
-	else
-		printf("Socket successfully binded..\n");
-
-	// Now server is ready to listen and verification
-	if ((listen(sockfd, 5)) != 0) {
-		printf("Listen failed...\n");
-		exit(0);
-	}
-	else
-		printf("Server listening..\n");
-	len = sizeof(cli);
-
-	// Accept the data packet from client and verification
-	connfd = accept(sockfd, (SA*)&cli, &len);
-	if (connfd < 0) {
-		printf("server accept failed...\n");
-		exit(0);
-	}
-	else
-		printf("server accept the client...\n");
-
-	// Function for chatting between client and server
-	func(connfd);
-
-	// After chatting close the socket
-	close(sockfd);
-}
-

@@ -1,1 +1,11 @@
-Le seuls messages d'erreurs en UDP sont si les adresses sont mal formés ou si on met l'adresse d'une autre variable. 
+Test avancés : Série 1
+1) Supprimer le nommage de la socket ne fait rien (voir explication)
+2) Envoyer un tab (voir johann)
+3) Envoyer une struct (voir johann)
+
+Deuxième série : Voir wooclap
+
+Quatrième série : 
+1) Cela ne change rien, le serveur reçois bien les deux messages. 
+2) Erreur lors de la création de la socket car l'adresse est déjà utilisée par le premier serveur. 
+3) Un serveur peut dialoguer avec plusieurs clients (voir johann)

@@ -1,64 +1,105 @@
-#include <netdb.h>
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
+#include <stdio.h> 
+#include <unistd.h>
+#include <sys/types.h>
 #include <sys/socket.h>
-#define MAX 80
-#define PORT 8080
-#define SA struct sockaddr
-void func(int sockfd)
-{
-	char buff[MAX];
-	int n;
-	for (;;) {
-		bzero(buff, sizeof(buff));
-		printf("Enter the string : ");
-		n = 0;
-		while ((buff[n++] = getchar()) != '\n')
-			;
-		write(sockfd, buff, sizeof(buff));
-		bzero(buff, sizeof(buff));
-		read(sockfd, buff, sizeof(buff));
-		printf("From Server : %s", buff);
-		if ((strncmp(buff, "exit", 4)) == 0) {
-			printf("Client Exit...\n");
-			break;
-		}
-	}
+#include <netdb.h>
+#include <stdlib.h>
+#include<arpa/inet.h>
+#include<string.h>
+
+/* Programme client */
+
+int main(int argc, char *argv[]) {
+
+  /* je passe en paramètre l'adresse de la socket du serveur (IP et
+     numéro de port) et un numéro de port à donner à la socket créée plus loin.*/
+
+  /* Je teste le passage de parametres. Le nombre et la nature des
+     paramètres sont à adapter en fonction des besoins. Sans ces
+     paramètres, l'exécution doit être arrétée, autrement, elle
+     aboutira à des erreurs.*/
+  if (argc != 4){
+    printf("utilisation : %s ip_serveur port_serveur port_client\n", argv[0]);
+    exit(1);
+  } 
+
+  /* Etape 1 : créer une socket */   
+  int ds = socket(PF_INET, SOCK_STREAM, 0);
+
+  /* /!\ : Il est indispensable de tester les valeurs de retour de
+     toutes les fonctions et agir en fonction des valeurs
+     possibles. Voici un exemple */
+  if (ds == -1){
+    perror("[Client] : pb creation socket :");
+    exit(1); // je choisis ici d'arrêter le programme car le reste
+	     // dépendent de la réussite de la création de la socket.
+  }
+  
+  /* J'ajoute des traces pour comprendre l'exécution et savoir
+     localiser des éventuelles erreurs */
+  printf("[Client] : creation de la socket réussie \n");
+  
+  // Je peux tester l'exécution de cette étape avant de passer à la
+  // suite. Faire de même pour la suite : n'attendez pas de tout faire
+  // avant de tester.
+  
+  /* Etape 2 : Nommer la socket du client */
+   /*struct sockaddr_in ad;
+   socklen_t len = sizeof(ad);
+   ad.sin_family = AF_INET;            // IPv4
+   ad.sin_addr.s_addr = INADDR_ANY;
+   ad.sin_port = htons(atoi(argv[3])); 
+   int res = bind(ds, (struct sockaddr *)&ad, len);
+   if (res == -1){
+      perror("[Client] : pb nommage socket :");
+      exit(1);
+  }/*
+  
+  /* Etape 3 : Désigner la socket du serveur */
+   struct sockaddr_in srv;
+   srv.sin_family = AF_INET;
+   srv.sin_addr.s_addr = inet_addr(argv[1]); //91.174.102.81:32768
+   srv.sin_port = htons(atoi(argv[2]));
+   socklen_t lgA = sizeof(struct sockaddr_in);
+   
+   //demande de connexion au serveur 
+   printf("Demande de connexion");
+   int res = connect(ds, (struct sockaddr *)&srv, lgA);
+   if(res == -1){
+   	printf("erreur lors de la demande de connexion");
+   }
+
+  /* Etape 4 : envoyer un message au serveur  (voir sujet pour plus de détails)*/
+   char msgUser[100];
+
+   printf("Entrer un message : ");
+   scanf("%s",msgUser);
+   ssize_t msg = send(ds, msgUser, strlen(msgUser)+1, 0);
+
+
+   if (msg == -1){
+      perror("[Client] : pb envoi message :");
+      exit(1);
+  }
+  else
+  {
+     printf("Message bien envoyé...");
+  }
+  
+   /* Etape 5 : recevoir un message du serveur (voir sujet pour plus de détails) */
+   socklen_t servAdr = sizeof(srv);
+   char bytesSent[100];
+   ssize_t servRes = recv(ds, bytesSent, 100, 0);
+
+   if (servRes == -1) {
+      perror("[CLIENT] Erreur lors de la réception du message du serveur ");
+      exit(5);
+   }
+   printf("[CLIENT] %s", bytesSent);
+
+   /* Etape 6 : fermer la socket (lorsqu'elle n'est plus utilisée)*/
+   shutdown(ds, SHUT_RDWR); //free(msgUser);
+
+   printf("[CLIENT] Sortie.\n");
+  return 0;
 }
-
-int main()
-{
-	int sockfd, connfd;
-	struct sockaddr_in servaddr, cli;
-
-	// socket create and varification
-	sockfd = socket(AF_INET, SOCK_STREAM, 0);
-	if (sockfd == -1) {
-		printf("socket creation failed...\n");
-		exit(0);
-	}
-	else
-		printf("Socket successfully created..\n");
-	bzero(&servaddr, sizeof(servaddr));
-
-	// assign IP, PORT
-	servaddr.sin_family = AF_INET;
-	servaddr.sin_addr.s_addr = inet_addr("127.0.0.1");
-	servaddr.sin_port = htons(PORT);
-
-	// connect the client socket to server socket
-	if (connect(sockfd, (SA*)&servaddr, sizeof(servaddr)) != 0) {
-		printf("connection with the server failed...\n");
-		exit(0);
-	}
-	else
-		printf("connected to the server..\n");
-
-	// function for chat
-	func(sockfd);
-
-	// close the socket
-	close(sockfd);
-}
-
