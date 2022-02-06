@@ -45,7 +45,7 @@ int main(int argc, char *argv[]) {
    /* Etape 2 : Nommer la socket du serveur */
    struct sockaddr_in ad;
    socklen_t len = sizeof(ad);
-   ad.sin_family = AF_INET;            // IPv4
+   ad.sin_family = AF_INET;      
    ad.sin_addr.s_addr = INADDR_ANY;
    
    //passer la socket en mode écoute
@@ -67,23 +67,25 @@ int main(int argc, char *argv[]) {
 
    printf("[SERVEUR] En cours d'exécution : %s:%d\n", inet_ntoa(ad.sin_addr), ntohs(ad.sin_port));
    
+   //passer la socket en mode écoute
+   res = listen(ds, 10);
+   if (res == -1){
+     printf("Erreur lors du passage en mode écoute");
+     exit(1);
+   }
+   else {printf("Passage en mode écoute réussie\n");} 
+      
+   struct sockaddr_in sockClient;
+   socklen_t lgAdr = sizeof(struct sockaddr_in);
+   int dsclient = accept(ds, (struct sockaddr*)&sockClient, &lgAdr);
+
    while (1) {
-      //passer la socket en mode écoute
-      res = listen(ds, 10);
-      if (res == -1){
-	   printf("Erreur lors du passage en mode écoute");
-      }
-      struct sockaddr_in sockClient;
-      socklen_t lgAdr = sizeof(struct sockaddr_in);
-      int dsclient = accept(ds, (struct sockaddr*)&sockClient, &lgAdr);
-      
-      
       /* Etape 4 : recevoir un message du client (voir sujet pour plus de détails)*/
       int msgSize = 100;
       char msg[100];
-      ssize_t res = recv(ds, msg, msgSize, 0);
-      if (res == -1) {
-        perror("[SERVEUR] Erreur lors de la réception du message ");
+      ssize_t msgres = recv(dsclient, msg, msgSize, 0);
+      if (msgres == -1) {
+        perror("[SERVEUR] Erreur lors de la réception du message");
         exit(1);
       }
 
@@ -94,19 +96,20 @@ int main(int argc, char *argv[]) {
       printf("[SERVEUR] Message reçu : %s\n", msg);
       printf("[SERVEUR] Adresse du client : %s:%i\n", inet_ntoa(sockClient.sin_addr), ntohs(sockClient.sin_port));
     
-        /* Etape 5 : envoyer un message au serveur (voir sujet pour plus de détails) */
-        char len[100];
-        sprintf(len, "Taille du message reçu par le serveur : %zu\n", strlen(msg));
-        if (send(ds, len, strlen(len) + 1, 0) == -1) {
-            perror("[SERVEUR] Erreur lors du retour au client ");
-            exit(5);
-        }
+      /* Etape 5 : envoyer un message au serveur (voir sujet pour plus de détails)*/
+      char len[100];
+      sprintf(len, "Taille du message reçu par le serveur : %zu\n", strlen(msg));
+      if (send(dsclient, len, strlen(len) + 1, 0) == -1) {
+          perror("[SERVEUR] Erreur lors du retour au client ");
+          exit(1);
+      }
     }
 
    /* Etape 6 : fermer la socket (lorsqu'elle n'est plus utilisée)*/
    
    // On pourrait aussi faire close() mais shutdown() est plus sécurisée et plus pratique à manipuler.
    shutdown(ds, SHUT_RDWR);
+   shutdown(dsclient, SHUT_RDWR);
 
    printf("[SERVEUR] Sortie.\n");
    return 0;

@@ -63,7 +63,7 @@ int main(int argc, char *argv[]) {
    socklen_t lgA = sizeof(struct sockaddr_in);
    
    //demande de connexion au serveur 
-   printf("Demande de connexion");
+   printf("Demande de connexion\n");
    int res = connect(ds, (struct sockaddr *)&srv, lgA);
    if(res == -1){
    	printf("erreur lors de la demande de connexion");
@@ -71,20 +71,18 @@ int main(int argc, char *argv[]) {
 
   /* Etape 4 : envoyer un message au serveur  (voir sujet pour plus de détails)*/
    char msgUser[100];
-
    printf("Entrer un message : ");
    scanf("%s",msgUser);
    ssize_t msg = send(ds, msgUser, strlen(msgUser)+1, 0);
 
-
    if (msg == -1){
       perror("[Client] : pb envoi message :");
       exit(1);
-  }
-  else
-  {
-     printf("Message bien envoyé...");
-  }
+   }
+   else
+   {
+      printf("Message bien envoyé...\n");
+   } 
   
    /* Etape 5 : recevoir un message du serveur (voir sujet pour plus de détails) */
    socklen_t servAdr = sizeof(srv);
