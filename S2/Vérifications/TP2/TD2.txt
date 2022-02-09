@@ -1,0 +1,50 @@
+Exercice 2 : 
+2) Écrire une tactique coq :
+Enchaîner des règles d'une certaine manière.
+
+Ltac simplifie :=
+ intros;
+ repeat
+  (rewrite P_unit || rewrite AR_unit || rewrite AL_unit);
+ try reflexivity.
+
+Tactique de l'exercice peano : 
+
+Ltac simplifie2 :=
+ intros;
+ repeat
+  (rewrite ax7 || rewrite ax6 || rewrite ax5 || rewrite ax4);
+ try reflexivity.
+
+Lemma isos2_ex1_2 : (plus (s o) (s (s o))) = (s (s (s o))).
+Proof.
+ simplifie2.
+Qed.
+
+Lemma isos2_ex2_2 : (plus (s (s o)) (s (s o))) = (s (s (s (s o)))).
+Proof.
+ simplifie2.
+Qed.
+
+Lemma isos2_ex3_2 : (mult (s (s o)) (s (s o))) = (s (s (s (s o)))).
+Proof.
+ simplifie2.
+Qed.
+
+Avec autorewrite : 
+Hint Rewrite ax7 ax6 ax5 ax4 : toto.
+
+Lemma isos2_ex1_3 : (plus (s o) (s (s o))) = (s (s (s o))).
+Proof.
+ autorewrite with toto using try reflexivity.
+Qed.
+
+Lemma isos2_ex2_3 : (plus (s (s o)) (s (s o))) = (s (s (s (s o)))).
+Proof.
+ autorewrite with toto using try reflexivity.
+Qed.
+
+Lemma isos2_ex3_3 : (mult (s (s o)) (s (s o))) = (s (s (s (s o)))).
+Proof.
+ autorewrite with toto using try reflexivity.
+Qed.
