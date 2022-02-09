@@ -77,13 +77,17 @@ int main(int argc, char *argv[]) {
       
    struct sockaddr_in sockClient;
    socklen_t lgAdr = sizeof(struct sockaddr_in);
-   int dsclient = accept(ds, (struct sockaddr*)&sockClient, &lgAdr);
 
    while (1) {
+      int dsclient = accept(ds, (struct sockaddr*)&sockClient, &lgAdr);
+
+
       /* Etape 4 : recevoir un message du client (voir sujet pour plus de détails)*/
-      int msgSize = 100;
-      char msg[100];
+      int msgSize = 4000;
+      char msg[4000];
       ssize_t msgres = recv(dsclient, msg, msgSize, 0);
+      printf(" --- Connexion réussie : %s:%i ---\n", inet_ntoa(sockClient.sin_addr), ntohs(sockClient.sin_port));
+      
       if (msgres == -1) {
         perror("[SERVEUR] Erreur lors de la réception du message");
         exit(1);
@@ -93,9 +97,11 @@ int main(int argc, char *argv[]) {
          perror("[SERVEUR] Erreur lors de la réception du message ");
          exit(1); 
       }
+      printf("------------------------------------------------\n");
       printf("[SERVEUR] Message reçu : %s\n", msg);
-      printf("[SERVEUR] Adresse du client : %s:%i\n", inet_ntoa(sockClient.sin_addr), ntohs(sockClient.sin_port));
-    
+      printf("Adresse du client : %s:%i\n", inet_ntoa(sockClient.sin_addr), ntohs(sockClient.sin_port));
+      printf("------------------------------------------------\n");
+
       /* Etape 5 : envoyer un message au serveur (voir sujet pour plus de détails)*/
       char len[100];
       sprintf(len, "Taille du message reçu par le serveur : %zu\n", strlen(msg));
@@ -109,7 +115,6 @@ int main(int argc, char *argv[]) {
    
    // On pourrait aussi faire close() mais shutdown() est plus sécurisée et plus pratique à manipuler.
    shutdown(ds, SHUT_RDWR);
-   shutdown(dsclient, SHUT_RDWR);
 
    printf("[SERVEUR] Sortie.\n");
    return 0;

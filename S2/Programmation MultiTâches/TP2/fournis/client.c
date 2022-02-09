@@ -70,13 +70,14 @@ int main(int argc, char *argv[]) {
    }
 
   /* Etape 4 : envoyer un message au serveur  (voir sujet pour plus de détails)*/
-   char msgUser[100];
+   char msgUser[1500]; //taille de 1500 max
    printf("Entrer un message : ");
-   scanf("%s",msgUser);
+   scanf("%s", msgUser);
    ssize_t msg = send(ds, msgUser, strlen(msgUser)+1, 0);
+   ssize_t msg2 = send(ds, msgUser, strlen(msgUser)+1, 0);
 
-   if (msg == -1){
-      perror("[Client] : pb envoi message :");
+   if (msg == -1 || msg2 == -1){
+      perror("[Client] : pb envoi message :\n");
       exit(1);
    }
    else
@@ -86,8 +87,8 @@ int main(int argc, char *argv[]) {
   
    /* Etape 5 : recevoir un message du serveur (voir sujet pour plus de détails) */
    socklen_t servAdr = sizeof(srv);
-   char bytesSent[100];
-   ssize_t servRes = recv(ds, bytesSent, 100, 0);
+   char bytesSent[1000];
+   ssize_t servRes = recv(ds, bytesSent, 1000, 0);
 
    if (servRes == -1) {
       perror("[CLIENT] Erreur lors de la réception du message du serveur ");
