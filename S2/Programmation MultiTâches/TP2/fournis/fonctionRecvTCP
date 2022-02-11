@@ -1,0 +1,14 @@
+int recvTCP(int sock, void* msg, int sizeMsg) {
+    int remaining = sizeMsg;
+
+    while (remaining > 0) {
+        printf("Receive remaining : %i\n", remaining);
+        int res = recv(sock, msg + sizeMsg - remaining, remaining, 0);
+        if (res <= 0) {
+            return res;
+        }
+        remaining -= res;
+    }
+
+    return 1;
+}

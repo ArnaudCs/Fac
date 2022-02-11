@@ -9,6 +9,19 @@
 
 /* Programme client */
 
+int sendTCP(int sock, void* msg, int sizeMsg) {
+    int remaining = sizeMsg;
+    while (remaining > 0) {
+        printf("Send remaining : %i\n", remaining);
+        int res = send(sock, msg + sizeMsg - remaining, remaining, 0);
+        if (res <= 0) {
+            return res;
+        }
+        remaining -= res;
+    }
+    return 1;
+}
+
 int main(int argc, char *argv[]) {
 
   /* je passe en paramètre l'adresse de la socket du serveur (IP et
@@ -70,20 +83,70 @@ int main(int argc, char *argv[]) {
    }
 
   /* Etape 4 : envoyer un message au serveur  (voir sujet pour plus de détails)*/
-   char msgUser[1500]; //taille de 1500 max
-   printf("Entrer un message : ");
-   scanf("%s", msgUser);
-   ssize_t msg = send(ds, msgUser, strlen(msgUser)+1, 0);
-   ssize_t msg2 = send(ds, msgUser, strlen(msgUser)+1, 0);
+    //double envoi qui fonctionne.
+    /*char message[1500];
+    printf("Envoyer un message au serveur (1500 caractères max): ");
+    fgets(message, 1500, stdin);
+    int lenmsg = strlen(message) + 1;
+    printf("\n");
 
-   if (msg == -1 || msg2 == -1){
-      perror("[Client] : pb envoi message :\n");
-      exit(1);
-   }
-   else
-   {
-      printf("Message bien envoyé...\n");
-   } 
+    if (send(ds, &lenmsg, sizeof(int), 0) == -1) {
+        perror("[Exo 2-1] : erreur envoi de la taille du premier message");
+    }
+    if (send(ds, message, strlen(message), 0) == -1) {
+        perror("[Exo 2-1] : erreur envoi du premier message");
+    }
+    // deuxième message
+    if (send(ds, &lenmsg, sizeof(int), 0) == -1) {
+        perror("[Exo 2-1] : erreur envoi de la taille du second message");
+    }
+    if (send(ds, message, strlen(message), 0) == -1) {
+        perror("[Exo 2-1] : erreur envoi du second message");
+    }*/
+
+// version qui envoi un certain nombre de messages
+    /*char message[1500];
+    char nbs[4];
+    printf("[Exo 2-3] : envoyer un message au serveur (1500 caractères max): ");
+    fgets(message, 1500, stdin);
+    printf("\n[Exo 2-3] : combien de fois l'envoyer (entre 0 et 999): ");
+    fgets(nbs, 4, stdin);
+    printf("\n");
+
+    int nb = atoi(nbs);
+    int size_message = strlen(message) + 1;
+
+    printf("[Exo 2-3] : taille message envoyé : %i\n", size_message);
+    printf("[Exo 2-3] : Envoie de %i fois ce message au serveur\n", nb);
+
+    for (int i = 0; i < nb; ++i) {
+        if (send(ds, &size_message, sizeof(int), 0) == -1) {
+            perror("[Exo 2-3] : erreur envoi entier");
+        }
+        if (send(ds, message, size_message, 0) == -1) {
+            perror("[Exo 2-3] : erreur envoi message");
+        }
+    }*/
+
+     
+    //Etape 4 surcharge du buffer
+    char message[1000000];
+    printf("[Exo 2-4] : envoyer un message très long au serveur: ");
+    fgets(message, 1000000, stdin);
+    printf("\n");
+
+    int size_message = strlen(message) + 1;
+
+    printf("[Exo 2-4] : taille message envoyé : %i\n", size_message);
+
+    if (send(ds, &size_message, sizeof(int), 0) == -1) {
+        perror("[Exo 2-4] : erreur envoi entier");
+    }
+    if (send(ds, message, size_message, 0) == -1) {
+        perror("[Exo 2-4] : erreur envoi message");
+    }
+
+
   
    /* Etape 5 : recevoir un message du serveur (voir sujet pour plus de détails) */
    socklen_t servAdr = sizeof(srv);

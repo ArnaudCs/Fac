@@ -10,6 +10,22 @@
 
 /* Programme serveur */
 
+int recvTCP(int sock, void* msg, int sizeMsg) {
+    int remaining = sizeMsg;
+
+    while (remaining > 0) {
+        printf("Receive remaining : %i\n", remaining);
+        int res = recv(sock, msg + sizeMsg - remaining, remaining, 0);
+        if (res <= 0) {
+            return res;
+        }
+        remaining -= res;
+    }
+
+    return 1;
+}
+
+
 int main(int argc, char *argv[]) {
    /* Je passe en paramètre le numéro de port qui sera donné à la socket créée plus loin.*/
 
@@ -83,28 +99,135 @@ int main(int argc, char *argv[]) {
 
 
       /* Etape 4 : recevoir un message du client (voir sujet pour plus de détails)*/
-      int msgSize = 4000;
+      /*int msgSize = 4000;
       char msg[4000];
       ssize_t msgres = recv(dsclient, msg, msgSize, 0);
-      printf(" --- Connexion réussie : %s:%i ---\n", inet_ntoa(sockClient.sin_addr), ntohs(sockClient.sin_port));
-      
-      if (msgres == -1) {
-        perror("[SERVEUR] Erreur lors de la réception du message");
-        exit(1);
-      }
+      printf(" --- Connexion réussie : %s:%i ---\n", inet_ntoa(sockClient.sin_addr), ntohs(sockClient.sin_port));*/
+      char message[4000];      /*printf("[Exo 2-1] : Appuyer sur entrée pour mettre le serveur en attente d'un message");   // Pour bloquer l'attente
+      fgets(message, 1500, stdin);*/
 
-      if (msg == NULL) {
-         perror("[SERVEUR] Erreur lors de la réception du message ");
-         exit(1); 
-      }
-      printf("------------------------------------------------\n");
+
+      printf("Attente d'un message\n");
+	    /*int size;
+	    printf("[Exo 2-2] : Attente d'un message\n");
+
+	    res = recv(dsclient, &size, sizeof(int), 0);
+
+	    if (res == -1) {
+		perror("Erreur réception entier");
+	    }
+	    else if (res == 0) {
+		printf("Réception impossible, connection close\n");
+	    }
+	    else {
+		printf("Taille du prochain message %i octets\n", size);
+		char* message = (char*) malloc(size);
+		res = recv(dsclient, message, size, 0);
+
+		if (res == -1) {
+		    perror("[Exo 2-2] : erreur réception entier");
+		    free(message);
+		}
+		else if (res == 0) {
+		    printf("Réception impossible, connection close\n");
+		}
+
+		printf("Nombre d'octet : %i, message reçu : %s\n", res, message);
+		free(message);
+	    }*/
+
+    int size;
+    printf("[Exo 2-3] : Attente des messages clients\n");
+
+    int i = 1;
+    while (1) {
+
+        //plusieurs messages
+        /*int res = recv(dsclient, &size, sizeof(int), 0);
+
+        if (res == -1) {
+            perror("[Exo 2-3] : erreur réception entier");
+            exit(1);
+        }
+        else if (res == 0) {
+            printf("[Exo 2-3] : réception impossible, connection close\n");
+            exit(1);
+        }
+        else {
+            printf("[Exo 2-3] : Message %i, taille %i octets\n", i, size);
+            char* message = (char*) malloc(size);
+            int octets_restants = size;
+
+            int j = 0;
+            while (octets_restants > 0) {
+                res = recv(dsclient, message + (size - octets_restants), octets_restants, 0);
+                if (res == -1) {
+                    perror("[Exo 2-3] : erreur réception entier");
+                    free(message);
+                    exit(1);
+                }
+                else if (res == 0) {
+                    printf("[Exo 2-3] : réception impossible, connection close\n");
+                    exit(1);
+                }
+
+                octets_restants -= res;
+                j++;
+            }
+
+            printf("[Exo 2-3] : Message reçu après %i réception(s)\n", j);
+        }
+        i++;*/
+
+            //
+	    printf("[Exo 2-4] : Attente du long message client\n");
+
+	    int res = recv(dsclient, &size, sizeof(int), 0);
+
+	    if (res == -1) {
+		perror("[Exo 2-4] : erreur réception entier");
+		exit(1);
+	    }
+	    else if (res == 0) {
+		printf("[Exo 2-4] : réception impossible, connection close\n");
+		exit(1);
+	    }
+	    else {
+		printf("[Exo 2-4] : taille du long message : %i octets\n", size);
+		char* message = (char*) malloc(size);
+		int octets_restants = size;
+
+		int j = 0;
+		while (octets_restants > 0) {
+		    res = recv(dsclient, message + (size - octets_restants), octets_restants, 0);
+		    if (res == -1) {
+		        perror("[Exo 2-4] : erreur réception entier");
+		        free(message);
+		        exit(1);
+		    }
+		    else if (res == 0) {
+		        printf("[Exo 2-4] : réception impossible, connection close\n");
+		        exit(1);
+		    }
+
+		    octets_restants -= res;
+		    j++;
+		}
+
+		printf("[Exo 2-4] : Message reconstruit après %i réception(s)\n", j);
+	    }
+    }
+      
+
+      /*printf("------------------------------------------------\n");
       printf("[SERVEUR] Message reçu : %s\n", msg);
       printf("Adresse du client : %s:%i\n", inet_ntoa(sockClient.sin_addr), ntohs(sockClient.sin_port));
-      printf("------------------------------------------------\n");
+      printf("------------------------------------------------\n");*/
 
       /* Etape 5 : envoyer un message au serveur (voir sujet pour plus de détails)*/
       char len[100];
-      sprintf(len, "Taille du message reçu par le serveur : %zu\n", strlen(msg));
+      char msg2[200];
+      sprintf(len, "Taille du message reçu par le serveur : %zu\n", strlen(msg2));
       if (send(dsclient, len, strlen(len) + 1, 0) == -1) {
           perror("[SERVEUR] Erreur lors du retour au client ");
           exit(1);
