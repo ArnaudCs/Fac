@@ -1,16 +1,15 @@
+#include <netinet/in.h>
 #include <stdio.h> 
 #include <unistd.h>
 #include <sys/types.h>
 #include <sys/socket.h>
 #include <netdb.h>
 #include <stdlib.h>
-#include<arpa/inet.h>
-#include<string.h>
+#include <arpa/inet.h>
+#include <string.h>
 #include <sys/stat.h>
 
-#define ERROR -1
-
-#define MAX_BUFFER_SIZE 146980
+#include "utils.h"
 
 /**
  * Protocole de réception d'un message :
@@ -157,3 +156,4 @@ int main(int argc, char *argv[]) {
     
     printf("[CLIENT] Fin de service.\n");
 }
+

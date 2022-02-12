@@ -1,18 +1,17 @@
-#include <stdio.h>//perror
+#include <netinet/in.h>
+#include <stdio.h>
 #include <sys/types.h>
 #include <netdb.h>
 #include <arpa/inet.h>
+#include <sys/stat.h>
 #include <sys/socket.h>
-#include <unistd.h>//close
+#include <unistd.h>
 #include <stdlib.h>
 #include <string.h>
-#include <netinet/in.h>
-#include <sys/stat.h>
+
+#include "utils.h"
 
 #define MAX_FILENAME_SIZE 8000
-#define ERROR -1
-
-
 #define MAX_CLIENTS 10
 
 /**
