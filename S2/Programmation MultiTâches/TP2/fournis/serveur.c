@@ -67,7 +67,7 @@ int main(int argc, char *argv[]) {
    //passer la socket en mode écoute
 
    // Nommage manuel
-   ad.sin_port = htons(atoi(argv[1]));
+   ad.sin_port = ntohs(atoi(argv[1]));
 
    int res = bind(ds, (struct sockaddr *)&ad, sizeof(ad));
    if (res == -1) {

@@ -189,13 +189,16 @@ int main(int argc, char *argv[]) {
     while (1) {
         struct sockaddr_in clientSockAddr;
         int clientSocket = acceptConnection(serverSocket, &clientSockAddr);
+        printf("[SERVEUR] ID actuel : %d\n", getpid());
 
         int pid = fork();
 
         if (pid == 0) {
             close(serverSocket);
+            printf("[SERVEUR] Entrée dans le processus fils, numéro : %d\n", getpid());
+            printf("[SERVEUR] Père numéro : %d\n", getppid());
             printf("[SERVEUR] Le client connecté est %s:%i.\n", 
-                inet_ntoa(clientSockAddr.sin_addr), ntohs(clientSockAddr.sin_port));
+            inet_ntoa(clientSockAddr.sin_addr), ntohs(clientSockAddr.sin_port));
 
             // Réception du fichier envoyé par le client.
             receiveFile(clientSocket);
@@ -210,6 +213,7 @@ int main(int argc, char *argv[]) {
         
     close(serverSocket);
     printf("[SERVEUR] Fin de service.\n");
+    shutdown(serverSocket, SHUT_RDWR);
 }
 
 
