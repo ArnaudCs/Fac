@@ -56,8 +56,8 @@ int main(int argc, char *argv[]) {
   // suite. Faire de même pour la suite : n'attendez pas de tout faire
   // avant de tester.
   
-  /* Etape 2 : Nommer la socket du client */
-   /*struct sockaddr_in ad;
+  /* Etape 2 : Nommer la socket du client
+   struct sockaddr_in ad;
    socklen_t len = sizeof(ad);
    ad.sin_family = AF_INET;            // IPv4
    ad.sin_addr.s_addr = INADDR_ANY;
@@ -66,7 +66,7 @@ int main(int argc, char *argv[]) {
    if (res == -1){
       perror("[Client] : pb nommage socket :");
       exit(1);
-  }/*
+  }*/
   
   /* Etape 3 : Désigner la socket du serveur */
    struct sockaddr_in srv;
@@ -87,7 +87,7 @@ int main(int argc, char *argv[]) {
     /*char message[1500];
     printf("Envoyer un message au serveur (1500 caractères max): ");
     fgets(message, 1500, stdin);
-    int lenmsg = strlen(message) + 1;
+    int lenmsg = strlen(message);
     printf("\n");
 
     if (send(ds, &lenmsg, sizeof(int), 0) == -1) {
@@ -100,11 +100,30 @@ int main(int argc, char *argv[]) {
     if (send(ds, &lenmsg, sizeof(int), 0) == -1) {
         perror("[Exo 2-1] : erreur envoi de la taille du second message");
     }
-    if (send(ds, message, strlen(message), 0) == -1) {
+    if (send(ds, message, strlen(message)+1, 0) == -1) {
         perror("[Exo 2-1] : erreur envoi du second message");
     }*/
 
-// version qui envoi un certain nombre de messages
+    char message[1500];
+    printf("[Exo 2-2] : envoyer un message au serveur (1500 caractères max): ");
+    fgets(message, 1500, stdin);
+    printf("\n");
+
+    int size_message = strlen(message) + 1; 
+    if (send(ds, &size_message, sizeof(int), 0) == -1) {
+        perror("Erreur envoi premier entier");
+    }
+    if (send(ds, message, strlen(message) + 1, 0) == -1) {
+        perror("Erreur envoi premier message");
+    }
+    if (send(ds, &size_message, sizeof(int), 0) == -1) {
+        perror("Erreur envoi second entier");
+    }
+    if (send(ds, message, strlen(message) + 1, 0) == -1) {
+        perror("Erreur envoi second message");
+    }
+
+    // version qui envoi un certain nombre de messages
     /*char message[1500];
     char nbs[4];
     printf("[Exo 2-3] : envoyer un message au serveur (1500 caractères max): ");
@@ -120,16 +139,16 @@ int main(int argc, char *argv[]) {
     printf("[Exo 2-3] : Envoie de %i fois ce message au serveur\n", nb);
 
     for (int i = 0; i < nb; ++i) {
-        if (send(ds, &size_message, sizeof(int), 0) == -1) {
+        if (sendTCP(ds, &size_message, sizeof(int)) == -1) {
             perror("[Exo 2-3] : erreur envoi entier");
         }
-        if (send(ds, message, size_message, 0) == -1) {
+        if (sendTCP(ds, message, size_message) == -1) {
             perror("[Exo 2-3] : erreur envoi message");
         }
     }*/
 
      
-    //Etape 4 surcharge du buffer
+    /*//Etape 4 surcharge du buffer
     char message[1000000];
     printf("[Exo 2-4] : envoyer un message très long au serveur: ");
     fgets(message, 1000000, stdin);
@@ -144,7 +163,7 @@ int main(int argc, char *argv[]) {
     }
     if (send(ds, message, size_message, 0) == -1) {
         perror("[Exo 2-4] : erreur envoi message");
-    }
+    }*/
 
 
   
