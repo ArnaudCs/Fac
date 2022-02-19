@@ -24,15 +24,8 @@ int sendTCP(int sock, void* msg, int sizeMsg) {
 
 int main(int argc, char *argv[]) {
 
-  /* je passe en paramètre l'adresse de la socket du serveur (IP et
-     numéro de port) et un numéro de port à donner à la socket créée plus loin.*/
-
-  /* Je teste le passage de parametres. Le nombre et la nature des
-     paramètres sont à adapter en fonction des besoins. Sans ces
-     paramètres, l'exécution doit être arrétée, autrement, elle
-     aboutira à des erreurs.*/
-  if (argc != 4){
-    printf("utilisation : %s ip_serveur port_serveur port_client\n", argv[0]);
+  if (argc != 5){
+    printf("utilisation : %s ip_serveur port_serveur port_client port_serveur/client\n", argv[0]);
     exit(1);
   } 
 
@@ -51,22 +44,7 @@ int main(int argc, char *argv[]) {
   /* J'ajoute des traces pour comprendre l'exécution et savoir
      localiser des éventuelles erreurs */
   printf("[Client] : creation de la socket réussie \n");
-  
-  // Je peux tester l'exécution de cette étape avant de passer à la
-  // suite. Faire de même pour la suite : n'attendez pas de tout faire
-  // avant de tester.
-  
-  /* Etape 2 : Nommer la socket du client
-   struct sockaddr_in ad;
-   socklen_t len = sizeof(ad);
-   ad.sin_family = AF_INET;            // IPv4
-   ad.sin_addr.s_addr = INADDR_ANY;
-   ad.sin_port = htons(atoi(argv[3])); 
-   int res = bind(ds, (struct sockaddr *)&ad, len);
-   if (res == -1){
-      perror("[Client] : pb nommage socket :");
-      exit(1);
-  }*/
+
   
   /* Etape 3 : Désigner la socket du serveur */
    struct sockaddr_in srv;
@@ -84,87 +62,6 @@ int main(int argc, char *argv[]) {
 
   /* Etape 4 : envoyer un message au serveur  (voir sujet pour plus de détails)*/
     //double envoi qui fonctionne.
-    /*char message[1500];
-    printf("Envoyer un message au serveur (1500 caractères max): ");
-    fgets(message, 1500, stdin);
-    int lenmsg = strlen(message);
-    printf("\n");
-
-    if (send(ds, &lenmsg, sizeof(int), 0) == -1) {
-        perror("[Exo 2-1] : erreur envoi de la taille du premier message");
-    }
-    if (send(ds, message, strlen(message), 0) == -1) {
-        perror("[Exo 2-1] : erreur envoi du premier message");
-    }
-    // deuxième message
-    if (send(ds, &lenmsg, sizeof(int), 0) == -1) {
-        perror("[Exo 2-1] : erreur envoi de la taille du second message");
-    }
-    if (send(ds, message, strlen(message)+1, 0) == -1) {
-        perror("[Exo 2-1] : erreur envoi du second message");
-    }*/
-
-    char message[1500];
-    printf("[Exo 2-2] : envoyer un message au serveur (1500 caractères max): ");
-    fgets(message, 1500, stdin);
-    printf("\n");
-
-    int size_message = strlen(message) + 1; 
-    if (send(ds, &size_message, sizeof(int), 0) == -1) {
-        perror("Erreur envoi premier entier");
-    }
-    if (send(ds, message, strlen(message) + 1, 0) == -1) {
-        perror("Erreur envoi premier message");
-    }
-    /*if (send(ds, &size_message, sizeof(int), 0) == -1) {
-        perror("Erreur envoi second entier");
-    }
-    if (send(ds, message, strlen(message) + 1, 0) == -1) {
-        perror("Erreur envoi second message");
-    }*/
-
-    // version qui envoi un certain nombre de messages
-    /*char message[1500];
-    char nbs[4];
-    printf("[Exo 2-3] : envoyer un message au serveur (1500 caractères max): ");
-    fgets(message, 1500, stdin);
-    printf("\n[Exo 2-3] : combien de fois l'envoyer (entre 0 et 999): ");
-    fgets(nbs, 4, stdin);
-    printf("\n");
-
-    int nb = atoi(nbs);
-    int size_message = strlen(message) + 1;
-
-    printf("[Exo 2-3] : taille message envoyé : %i\n", size_message);
-    printf("[Exo 2-3] : Envoie de %i fois ce message au serveur\n", nb);
-
-    for (int i = 0; i < nb; ++i) {
-        if (sendTCP(ds, &size_message, sizeof(int)) == -1) {
-            perror("[Exo 2-3] : erreur envoi entier");
-        }
-        if (sendTCP(ds, message, size_message) == -1) {
-            perror("[Exo 2-3] : erreur envoi message");
-        }
-    }*/
-
-     
-    /*//Etape 4 surcharge du buffer
-    char message[1000000];
-    printf("[Exo 2-4] : envoyer un message très long au serveur: ");
-    fgets(message, 1000000, stdin);
-    printf("\n");
-
-    int size_message = strlen(message) + 1;
-
-    printf("[Exo 2-4] : taille message envoyé : %i\n", size_message);
-
-    if (send(ds, &size_message, sizeof(int), 0) == -1) {
-        perror("[Exo 2-4] : erreur envoi entier");
-    }
-    if (send(ds, message, size_message, 0) == -1) {
-        perror("[Exo 2-4] : erreur envoi message");
-    }*/
-
 
   
    /* Etape 5 : recevoir un message du serveur (voir sujet pour plus de détails) */
@@ -177,37 +74,170 @@ int main(int argc, char *argv[]) {
       exit(5);
    }
    printf("[CLIENT] %s", bytesSent);*/
+   int size; 
+   char* message;
+   printf("Attente d'un message\n");
+   res = recv(ds, &size, sizeof(int), 0);
+   if (res == -1) {
+	perror("Erreur réception entier");
+   }
+   else if (res == 0) {
+	printf("Réception impossible, connection close\n");
+   }
+   else {
+	printf("Taille du prochain message %i octets\n", size);
+	message = (char*) malloc(size);
+	res = recv(ds, message, size, 0);
 
-			int size; 
-			printf("Attente d'un message\n");
+	if (res == -1) {
+		perror("Erreur réception entier");
+		free(message);
+	}
+	else if (res == 0) {
+		printf("Réception impossible, connection close\n");
+	}
 
-			res = recv(ds, &size, sizeof(int), 0);
+	printf("Nombre d'octet : %i, message reçu : %s\n", res, message);
+        printf("Envoi du message\n");
+        printf("\n");
+        if (send(ds, message+1, size, 0) == -1) {
+        	perror("Erreur envoi du message");
+   	}
+   	free(message);
+   }
+   
+   
 
-			if (res == -1) {
-				perror("Erreur réception entier");
-			}
-			else if (res == 0) {
-				printf("Réception impossible, connection close\n");
-			}
-			else {
-				printf("Taille du prochain message %i octets\n", size);
-				char* message = (char*) malloc(size);
-				res = recv(ds, message, size, 0);
+   //Vous venez de recevoir un message de type chaine de caracteres. L'etape suivante est de renvoyer ce meme message (et uniquement ce message) à l'expediteur, ensuite de recevoir une nouvelle instruction.
 
-				if (res == -1) {
-					perror("Erreur réception entier");
-					free(message);
-				}
-				else if (res == 0) {
-					printf("Réception impossible, connection close\n");
-				}
+   ////////////////////////////////////////////////////////////////////////////////////////////////////////
+   printf("\n");
+   printf("############ Démarrage partie SERVEUR ############\n");
+   printf("\n");
 
-				printf("Nombre d'octet : %i, message reçu : %s\n", res, message);
-				free(message);
-			}
+   int ds2 = socket(PF_INET, SOCK_STREAM, 0);
+   if (ds2 == -1) {
+	  perror("[SERVEUR] Erreur lors de la création de la socket ");
+	  exit(1); // je choisis ici d'arrêter le programme car le reste
+	  // dépendent de la réussite de la création de la socket.
+   }
+   printf("[SERVEUR/CLIENT] Création de la socket réussie.\n");
+
+   struct sockaddr_in ad;
+   socklen_t len = sizeof(ad);
+   ad.sin_family = AF_INET;      
+   ad.sin_addr.s_addr = INADDR_ANY;
+   
+   // Nommage manuel
+   ad.sin_port = ntohs(atoi(argv[4]));
+
+   res = bind(ds2, (struct sockaddr *)&ad, sizeof(ad));
+   if (res == -1) {
+	  perror("[SERVEUR/CLIENT] Erreur lors du nommage de la socket");
+	  exit(1);
+   }
+   // Récupération de l'adresse et du numéro de port
+   if (getsockname(ds2, (struct sockaddr *)&ad, &len) == -1) {
+	  perror("[SERVEUR/CLIENT] Erreur lors du nommage automatique de la socket");
+	  exit(1);
+   }
+   printf("[SERVEUR/CLIENT] En cours d'exécution : %s:%d\n", inet_ntoa(ad.sin_addr), ntohs(ad.sin_port));
+   
+   //passer la socket en mode écoute
+   res = listen(ds2, 10);
+   if (res == -1){
+	 printf("Erreur lors du passage en mode écoute");
+	 exit(1);
+   }
+   else {printf("[SERVEUR/CLIENT] Passage en mode écoute réussie\n");} 
+   
+   //envoi du port au serveur
+   printf("[SERVEUR/CLIENT] Envoie du port au serveur\n");
+   short port = atoi(argv[4]); 
+   printf("[SERVEUR/CLIENT] Port du serveur-client : %i\n", port);
+   printf("\n");
+   if (send(ds, &port, sizeof(short), 0) == -1) {
+       perror("Erreur envoi du port au serveur");
+   }
+   printf("[SERVEUR/CLIENT] Envoi du port réussit\n");
+   close(ds);
+   shutdown(ds, SHUT_RDWR);
+	  
+   struct sockaddr_in sockClient;
+   socklen_t lgAdr = sizeof(struct sockaddr_in);
+   printf("[SERVEUR/CLIENT] Attente de connexion client\n");
+   int dsclient = accept(ds2, (struct sockaddr*)&sockClient, &lgAdr);
+
+   if ( dsclient == -1){
+   	perror("Erreur lors de l'acceptation de la demande de connexion\n");
+	exit(1);
+   }
+   printf("[SERVEUR/CLIENT] Connexion réussie avec le client\n");
+
+   for(int i = 0; i<2; i++){
+	int size2; 
+	printf("[SERVEUR/CLIENT] Attente d'un message\n");
+	res = recv(dsclient, &size2, sizeof(int), 0);
+	if (res == -1) {
+		perror("Erreur réception entier");
+	}
+	else if (res == 0) {
+		printf("Réception impossible, connection close\n");
+                exit(1);
+	}
+	else {
+		printf("[SERVEUR/CLIENT] Taille du prochain message %i octets\n", size2);
+		char* message = (char*) malloc(size);
+		res = recv(dsclient, message, size2, 0);
+
+		if (res == -1) {
+			perror("Erreur réception entier");
+			free(message);
+		}
+		else if (res == 0) {
+			printf("Réception impossible, connection close\n");
+			exit(1);
+		}
+		printf("[SERVEUR/CLIENT] Nombre d'octet : %i, message reçu : %s\n", res, message);
+		free(message);
+      }
+   }
+
+   printf("\n");
+   printf("############ Démarrage partie SERVEUR itératif ############\n");
+   printf("\n");
+
+    while (1) {
+        struct sockaddr_in clientSockAddr;
+        int clientSocket = accept(ds2, (struct sockaddr*)&sockClient, &lgAdr);
+        printf("[SERVEUR/ITERATIF] ID actuel : %d\n", getpid());
+
+        int pid = fork();
+
+        if (pid == 0) {
+            close(ds2);
+            printf("[SERVEUR/ITERATIF] Entrée dans le processus fils, numéro : %d\n", getpid());
+            printf("[SERVEUR/ITERATIF] Père numéro : %d\n", getppid());
+            printf("[SERVEUR/ITERATIF] Le client connecté est %s:%i.\n", inet_ntoa(clientSockAddr.sin_addr), ntohs(clientSockAddr.sin_port));
+            
+            printf("[SERVEUR/ITERATIF] Fermeture de la connexion.\n");
+	    printf("[SERVEUR/ITERATIF] --------------------------------------------------\n");
+            printf("\n");
+            close(clientSocket);
+            break;
+        }
+        close(clientSocket);
+    }
+        
+    close(ds2);
+
+        /*Nombre d'octet : 455, message reçu : Bravo, vous avez atteint la derniere etape. Il reste a modifier votre code pour que la partie serveur de votre programme soit capable de traiter 4 clients, un apres l'autre 
+        (serveur iteratif). Quatre clients enverront une demande de connexion. Attention, l'un des clients est malicieux et peut se deconnecter a n'importe quel moment. Ce comportement ne doit pas arreter votre serveur, 
+        qui doit pouvoir echanger avec un autre client qui se connecte apres.
+
 
    /* Etape 6 : fermer la socket (lorsqu'elle n'est plus utilisée)*/
-   shutdown(ds, SHUT_RDWR); //free(msgUser);
+   shutdown(ds2, SHUT_RDWR); //free(msgUser);
 
    printf("[CLIENT] Sortie.\n");
   return 0;
