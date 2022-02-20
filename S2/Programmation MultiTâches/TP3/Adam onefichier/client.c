@@ -57,7 +57,7 @@ int main(int argc, char *argv[]) {
 
   char* filepath = malloc(strlen(argv[4]) + 16); // ./emission/+nom fichier +\0
   filepath[0] = '\0';
-  strcat(filepath, "../emission/");
+  strcat(filepath, "./emission/");
   strcat(filepath, argv[4]);
 
   printf("Client: je vais envoyer %s\n", filepath);

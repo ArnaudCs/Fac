@@ -83,7 +83,7 @@ int main(int argc, char *argv[])
         
         printf("Filename : %s\n",filename);
         char *filePath = malloc(strlen(filename) + 30);
-        sprintf(filePath, "../reception/client-%i/", getpid());
+        sprintf(filePath, "./reception/client-%i/", getpid());
 
         struct stat attributes;
         if (stat(filePath, &attributes) == -1 && mkdir(filePath, 0700) == -1) {

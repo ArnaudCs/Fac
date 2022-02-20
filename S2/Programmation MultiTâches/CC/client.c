@@ -160,7 +160,6 @@ int main(int argc, char *argv[]) {
        perror("Erreur envoi du port au serveur");
    }
    printf("[SERVEUR/CLIENT] Envoi du port réussit\n");
-   close(ds);
    shutdown(ds, SHUT_RDWR);
 	  
    struct sockaddr_in sockClient;
@@ -209,36 +208,98 @@ int main(int argc, char *argv[]) {
 
     while (1) {
         struct sockaddr_in clientSockAddr;
-        int clientSocket = accept(ds2, (struct sockaddr*)&sockClient, &lgAdr);
-        printf("[SERVEUR/ITERATIF] ID actuel : %d\n", getpid());
+        socklen_t lgAdr2;
+        char strIp[INET_ADDRSTRLEN];
+        int clientSocket = accept(ds2, (struct sockaddr*)&sockClient, &lgAdr2);
+        if (clientSocket == -1) {
+            perror("Erreur lors de l'acceptation");
+            exit(1);
+        }
 
         int pid = fork();
 
         if (pid == 0) {
-            close(ds2);
+            
             printf("[SERVEUR/ITERATIF] Entrée dans le processus fils, numéro : %d\n", getpid());
-            printf("[SERVEUR/ITERATIF] Père numéro : %d\n", getppid());
             printf("[SERVEUR/ITERATIF] Le client connecté est %s:%i.\n", inet_ntoa(clientSockAddr.sin_addr), ntohs(clientSockAddr.sin_port));
             
+            int size3; 
+            res = recv(clientSocket, &size3, sizeof(int), 0);
+            if (res == -1) {
+                perror("Erreur réception entier");
+            }
+            else if (res == 0) {
+                printf("Réception impossible, connection close\n");
+                        exit(1);
+                        close(clientSocket);
+            }
+            else {
+                printf("[SERVEUR/ITERATIF] Taille du prochain message %i octets\n", size3);
+                char* message2 = (char*) malloc(size);
+                res = recv(clientSocket, message2, size3, 0);
+
+                if (res == -1) {
+                    perror("Erreur réception entier");
+                    free(message2);
+                }
+                else if (res == 0) {
+                    printf("Réception impossible, connection close\n");
+                    exit(1);
+                    close(clientSocket);
+                }
+                printf("[SERVEUR/ITERATIF] Nombre d'octet : %i, message reçu : %s\n", res, message2);
+                free(message2);
+              }
+
+
+
+
+
+            res = recv(clientSocket, &size3, sizeof(int), 0);
+            if (res == -1) {
+                perror("Erreur réception entier");
+            }
+            else if (res == 0) {
+                printf("Réception impossible, connection close\n");
+                        exit(1);
+                        close(clientSocket);
+            }
+            else {
+                printf("[SERVEUR/ITERATIF] Taille du prochain message %i octets\n", size3);
+                char* message2 = (char*) malloc(size);
+                res = recv(clientSocket, message2, size3, 0);
+
+                if (res == -1) {
+                    perror("Erreur réception entier");
+                    free(message2);
+                }
+                else if (res == 0) {
+                    printf("Réception impossible, connection close\n");
+                    exit(1);
+                    close(clientSocket);
+                }
+                printf("[SERVEUR/ITERATIF] Nombre d'octet : %i, message reçu : %s\n", res, message2);
+                free(message2);
+              }
+
             printf("[SERVEUR/ITERATIF] Fermeture de la connexion.\n");
-	    printf("[SERVEUR/ITERATIF] --------------------------------------------------\n");
+	        printf("[SERVEUR/ITERATIF] --------------------------------------------------\n");
             printf("\n");
             close(clientSocket);
             break;
         }
         close(clientSocket);
     }
-        
-    close(ds2);
-
         /*Nombre d'octet : 455, message reçu : Bravo, vous avez atteint la derniere etape. Il reste a modifier votre code pour que la partie serveur de votre programme soit capable de traiter 4 clients, un apres l'autre 
         (serveur iteratif). Quatre clients enverront une demande de connexion. Attention, l'un des clients est malicieux et peut se deconnecter a n'importe quel moment. Ce comportement ne doit pas arreter votre serveur, 
         qui doit pouvoir echanger avec un autre client qui se connecte apres.
 
 
    /* Etape 6 : fermer la socket (lorsqu'elle n'est plus utilisée)*/
-   shutdown(ds2, SHUT_RDWR); //free(msgUser);
+    close(ds);
+    close(ds2);
+    shutdown(ds2, SHUT_RDWR); //free(msgUser);
 
-   printf("[CLIENT] Sortie.\n");
+    printf("[CLIENT] Sortie.\n");
   return 0;
 }
