@@ -3,11 +3,11 @@
 ########################################
 
 # Executables à générer
-BIN=bin/acompleter  bin/serveur
+BIN=bin/clientTCP  bin/serveurTCP
 
 # liste des fichiers sources 
-SRCS0=acompleter.c
-SRCS1=serveur.c
+SRCS0=clientTCP.c
+SRCS1=serveurTCP.c
 
 default: $(BIN)
 
@@ -18,10 +18,10 @@ default: $(BIN)
 obj/%.o: %.c
 	gcc -Wall -Iinclude -c $< -o $@
 
-bin/acompleter: $(SRCS0:%.c=obj/%.o)
+bin/clientTCP: $(SRCS0:%.c=obj/%.o)
 	gcc -o $@ $+
 
-bin/serveur: $(SRCS1:%.c=obj/%.o)
+bin/serveurTCP: $(SRCS1:%.c=obj/%.o)
 	gcc -o $@ $+
 
 clean:
