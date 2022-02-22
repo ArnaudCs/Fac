@@ -1,17 +1,10 @@
-/** 
- * @file analdesc.c        
- * @author Michel Meynard
- * @brief Analyse descendante récursive d'expression arithmétique
- *
- * Ce fichier contient un reconnaisseur d'expressions arithmétiques composée de 
- * littéraux entiers sur un car, des opérateurs +, * et du parenthésage ().
- * Remarque : soit rediriger en entrée un fichier, soit terminer par deux 
- * caractères EOF (Ctrl-D), un pour lancer la lecture, l'autre comme "vrai" EOF.
- */
-#include <stdio.h>
-#include <stdlib.h>
-#include <ctype.h>
-                             /* les macros sont des blocs : pas de ';' apres */
+%{ /* analflex.l */
+/* ZONE DE DEFINITION (OPTIONNELLE) */
+/* ZONE DES REGLES apres le double pourcent (OBLIGATOIRE) */
+%}
+chiffre		([0-9])
+lettre		([a-zA-Z])
+%%
 #define AVANCER { jeton = getchar(); numcar++; }
 #define TEST_AVANCE(prevu) { if (jeton == (prevu)) AVANCER else ERREUR_SYNTAXE }
 #define ERREUR_SYNTAXE { printf("\nMot non reconnu : erreur de syntaxe \
@@ -64,7 +57,8 @@ int F() {                                   /* regle : F->(E)|0|1|...|9 */
         }
     }
 }
-
+%%
+/* ZONE DES FONCTIONS C */
 int main() {      
     printf("Entrez votre calcul : ");                       
     AVANCER			                        /* initialiser jeton sur le premier car */
