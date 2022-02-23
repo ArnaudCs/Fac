@@ -3,26 +3,38 @@
 #include <sys/types.h>
 #include <stdlib.h>
 #include <unistd.h>
-//#include <iostream>
 #include <pthread.h>
-
+#include <time.h>
+#include "calcul.h"
 
 struct paramsFonctionThread {
-
   int idThread;
-
-  // si d'autres paramËtres, les ajouter ici.
-
+  // si d'autres paramÔøΩtres, les ajouter ici.
 };
 
 
 void * fonctionThread (void * params){
 
-  struct paramsFonctionThread * args = (struct paramsFonctionThread *) params;
+  //struct paramsFonctionThread * args = (struct paramsFonctionThread *) params;
+  srand(time(NULL));
+  int *tableau = params;
   pthread_t actual = pthread_self();
+  
+  printf("D√©marage thread : %lu\n", actual);
+  printf("---------- Utilisation en cours ----------\n");
+  calcul(1);
+
+  int j = rand() % 75;
+  printf("----------------------------\n");
+  printf("| Case du tableau n¬∞3 : %i |\n", tableau[2]);
+  printf("----------------------------\n");
+  printf("Modification du tableau : case 3\n");
+  tableau[2] = j;
+  printf("--- > Case 3 modifi√©e avec la valeur : %i\n", j);
+  // exit(1); √ßa termine et n'affiche pas la fin des threads
+  printf("Fin d'√©x√©cution : fin du thread : %lu\n", actual);
+
   pthread_exit(NULL);
-  // a complÈter
-  //...
 }
 
 
@@ -32,32 +44,31 @@ int main(int argc, char * argv[]){
     printf("utilisation: %s  nombre_threads  \n", argv[0]);
     return 1;
   }     
+  int t[5] = { 1 , 5 , 45 , 3 , 9 };
+  pthread_t threads[atoi(argv[1])]; //tableau qui sert √† stocker les identifiants de threads (pthread_t sont les identifiants) 
   
-  pthread_t threads[atoi(argv[1])]; 
-  
-  // crÈation des threards 
+  // cr√©ation des threards 
   for (int i = 0; i < atoi(argv[1]); i++){
-
-    // Le passage de paramËtre est fortement conseillÈ (Èviter les
-    // variables globles).
-
-    //... complÈter pour initialiser les paramËtres
-    if (pthread_create(&threads[i], NULL, fonctionThread, NULL) != 0){
+    // Le passage de param√®tre est fortement conseillÔøΩ (ÔøΩviter les variables globles).
+    if (pthread_create(&threads[i], NULL, fonctionThread, t) != 0){ //tous les threads appellent fonctionThread, thread[i] r√©cup√®re l'identifiant syst√®me du thread qui vient d'√™tre cr√©√©e
+    //
       perror("erreur creation thread");
       exit(1);
     }
-    printf("Creation du thread reussi ! thread : %d associe au processeur : %i\n", threads, getpid());
-    //int res = pthread_join(threads, NULL);
-    //pthread_t actual = pthred_self();
   }
 
-
-// garder cette saisie et modifier le code en temps venu
-  char *c; 
-  printf("saisir un caractere \n");
-  fgets(c, 1, stdin); //prÈcedemment M ? fgetc pour un caractËre ?
-
- //... complÈter
+  
+  // garder cette saisie et modifier le code en temps venu
+  char c; 
+  //printf("saisir un caractere \n");
+  c = fgetc(stdin); //sert √† poursuivre l'ex√©cutioin
+  
+  printf("Affichage du tableau final : ");
+  printf("(");
+  for(int i=0; i<5; i++){
+    printf(" %i ", t[i]);
+  }
+  printf(")\n");
 
   return 0;
  
