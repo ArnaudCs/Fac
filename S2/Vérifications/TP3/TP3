@@ -123,5 +123,3 @@ Fixpoint sub (f : FProp) {struct f} : list FProp :=
   | (And g h) => (sub g) ++ (sub h)
 
 
-
-
