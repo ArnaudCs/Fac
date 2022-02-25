@@ -1,98 +1,106 @@
-.SUFFIXES:.cc .h .fl .l+ .y+ .fl+
+########################################
+#~ définitions
+########################################
 
-CPP=g++
-CC=gcc
-CFLAGS=-g -ansi -Wall
-CPPFLAGS=-g -ansi -Wall
+BIN=bin/blur bin/difference bin/dilatation bin/dilatation_grey bin/dilatation_rgb bin/erosion bin/erosion_grey bin/erosion_rgb 
+bin/fermeture bin/filtre_flou1 bin/filtre_flou2 bin/filtre_flou_rgb bin/filtre_gauss bin/filtre_moyenne 
+bin/histo bin/histo_rgb bin/hysteresis bin/inverse bin/norme_gradient bin/ouverture bin/profil bin/seuil_grey bin/test_couleur bin/test_couleur bin/test_grey bin/test_grey_3 bin/test_grey_4 
 
-LEX=flex
-LEXLIBRARY=-lfl
-YACC=bison
-YACCFLAGS=-ydtv
-#-y a la yacc : y.tab.c; -d genere y.tab.h; -t debogage possible; -v verbose
 
-clean :
-	rm lex.yy.c y.tab.c calc
+# liste des fichiers sources 
+SRCS0=blur.cpp
+SRCS1=difference.cpp
+SRCS2=dilatation.cpp
+SRCS3=dilatation_grey.cpp
+SRCS4=dilatation_rgb.cpp
+SRCS5=erosion.cpp
+SRCS6=erosion_grey.cpp
+SRCS7=erosion_rgb.cpp
+SRCS8=fermeture.cpp
+SRCS9=filtre_flou1.cpp
+SRCS10=filtre_flou2.cpp
+SRCS11=filtre_flou_rgb.cpp
+SRCS12=filtre_gauss.cpp
+SRCS13=filtre_moyenne.cpp
+SRCS14=histo.cpp
+SRCS15=histo_rgb.cpp
+SRCS16=hysteresis.cpp
+SRCS17=inverse.cpp
+SRCS18=norme_gradient.cpp
+SRCS19=ouverture.cpp
+SRCS20=profil.cpp
+SRCS21=seuil_grey.cpp
+SRCS22=test_couleur.cpp
+SRCS23=test_grey.cpp
+SRCS24=test_grey_3.cpp
+SRCS25=test_grey_4.cpp
 
-calc :	calc.y calc.l
-	# d'abord yacc pour y.tab.h puis lex puis gcc
-	@echo debut $(YACC)-compil : calc.y
-	$(YACC) $(YACCFLAGS) calc.y
-	@echo debut $(LEX)-compil : calc.l
-	$(LEX) calc.l
-	@echo debut compil c avec edition de liens
-	$(CC) -o calc y.tab.c lex.yy.c -lm   # lib math
-	@# attention l'option -g (debug) fait planter
-	@echo fin compil : vous pouvez executer calc
+default: $(BIN)
 
-#regles de suffixe
-.h.c:
-	@echo regle de suffixe : .h modifie donne .c modifie
-	touch $*.c
+########################################
+#~ regles pour l'executable
+########################################
 
-.c.o:
-	@echo debut compil c sans edition de liens de $<
-	$(CC) $(CFLAGS) -c $<
-	@echo fin compil de $<
+obj/%.o: %.cpp
+	gcc -Wall -Iinclude -c $< -o $@
 
-.c:
-	@echo debut compil c complete de $<
-	$(CC) $(CFLAGS) -o $* $<
-	@echo fin compil de $< en $*
+bin/serveur: $(SRCS1:%.c=obj/%.o)
+	gcc -o $@ $+
 
-.h.cc:
-	@echo regle de suffixe : .h modifie donne .cc modifie
-	touch $*.cc
+bin/blur: $(SRCS1:%.c=obj/%.o)
+	gcc -o $@ $+
+bin/difference: $(SRCS1:%.c=obj/%.o)
+	gcc -o $@ $+
+bin/dilatation: $(SRCS1:%.c=obj/%.o)
+	gcc -o $@ $+
+bin/dilatation_grey: $(SRCS1:%.c=obj/%.o)
+	gcc -o $@ $+
+bin/dilatation_rgb: $(SRCS1:%.c=obj/%.o)
+	gcc -o $@ $+
+bin/erosion: $(SRCS1:%.c=obj/%.o)
+	gcc -o $@ $+
+bin/erosion_grey: $(SRCS1:%.c=obj/%.o)
+	gcc -o $@ $+
+bin/erosion_rgb: $(SRCS1:%.c=obj/%.o)
+	gcc -o $@ $+
+bin/fermeture: $(SRCS1:%.c=obj/%.o)
+	gcc -o $@ $+
+bin/filtre_flou1: $(SRCS1:%.c=obj/%.o)
+	gcc -o $@ $+ 
+bin/filtre_flou2: $(SRCS1:%.c=obj/%.o)
+	gcc -o $@ $+
+bin/filtre_flou_rgb: $(SRCS1:%.c=obj/%.o)
+	gcc -o $@ $+
+bin/filtre_gauss: $(SRCS1:%.c=obj/%.o)
+	gcc -o $@ $+
+bin/filtre_moyenne: $(SRCS1:%.c=obj/%.o)
+	gcc -o $@ $+
+bin/histo: $(SRCS1:%.c=obj/%.o)
+	gcc -o $@ $+
+bin/histo_rgb: $(SRCS1:%.c=obj/%.o)
+	gcc -o $@ $+
+bin/hysteresis: $(SRCS1:%.c=obj/%.o)
+	gcc -o $@ $+
+bin/inverse: $(SRCS1:%.c=obj/%.o)
+	gcc -o $@ $+
+bin/norme_gradient: $(SRCS1:%.c=obj/%.o)
+	gcc -o $@ $+
+bin/ouverture: $(SRCS1:%.c=obj/%.o)
+	gcc -o $@ $+
+bin/profil: $(SRCS1:%.c=obj/%.o)
+	gcc -o $@ $+
+bin/seuil_grey: $(SRCS1:%.c=obj/%.o)
+	gcc -o $@ $+
+bin/test_couleur: $(SRCS1:%.c=obj/%.o)
+	gcc -o $@ $+
+bin/test_couleur: $(SRCS1:%.c=obj/%.o)
+	gcc -o $@ $+
+bin/test_grey: $(SRCS1:%.c=obj/%.o)
+	gcc -o $@ $+
+bin/test_grey_3: $(SRCS1:%.c=obj/%.o)
+	gcc -o $@ $+
+bin/test_grey_4: $(SRCS1:%.c=obj/%.o)
+	gcc -o $@ $+
 
-.cc.o:
-	@echo debut compil c++ sans edition de liens de $<
-	$(CPP) -c $(CPPFLAGS) $<
-	@echo fin compil de $<
-
-.cc:
-	@echo debut compil c++ complete de $<
-	$(CPP) -o $* $(CPPFLAGS) $<
-	@echo fin compil de $< en $*
-
-.l:	# avec la librairie LEX
-	@echo debut $(LEX)-compil : $<
-	$(LEX) $<
-	@echo debut compil c avec edition de liens de lex.yy.c
-	$(CC) $(CFLAGS) -o $* lex.yy.c $(LEXLIBRARY)
-	@echo fin $(LEX)-compil de : $<
-	@echo Vous pouvez executer : $*
-.fl:	# sans librairie (seulement flex) -> main et yywrap
-	@echo debut flex-compil : $<
-	flex $<
-	@echo debut compil c avec edition de liens de lex.yy.c
-	$(CC) $(CFLAGS) -o $* lex.yy.c
-	@echo fin flex-compil de : $<
-	@echo Vous pouvez executer : $*
-.l+:	# C++ avec la librairie LEX
-	@echo debut $(LEX)-compil : $<
-	$(LEX) $<
-	@echo debut compil c++ avec edition de liens de lex.yy.c
-	$(CPP) $(CPPFLAGS) -o $* lex.yy.c $(LEXLIBRARY)
-	@echo fin $(LEX)-compil de : $<
-	@echo Vous pouvez executer : $*
-.fl+:	# C++ sans librairie (seulement flex) -> main et yywrap
-	@echo debut $(LEX)-compil : $<
-	$(LEX) $<
-	@echo debut compil c++ avec edition de liens de lex.yy.c
-	$(CPP) $(CPPFLAGS) -o $* lex.yy.c
-	@echo fin $(LEX)-compil de : $<
-	@echo Vous pouvez executer : $*
-.y:
-	@echo debut $(YACC)-compil : $<
-	$(YACC) $(YACCFLAGS) $<
-	@echo debut compil c avec edition de liens de y.tab.c
-	$(CC) $(CFLAGS) -o $* y.tab.c
-	@echo fin $(YACC)-compil de : $<
-	@echo Vous pouvez executer : $*
-.y+:
-	@echo debut $(YACC)-compil : $<
-	$(YACC) $(YACCFLAGS) $<
-	@echo debut compil c++ avec edition de liens de y.tab.c
-	$(CPP) $(CPPFLAGS) -o $* y.tab.c
-	@echo fin $(YACC)-compil de : $<
-	@echo Vous pouvez executer : $*
+clean:
+	rm -f $(BIN) obj/*.o *~
