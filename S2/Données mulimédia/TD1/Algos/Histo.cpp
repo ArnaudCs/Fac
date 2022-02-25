@@ -32,13 +32,6 @@ int main(int argc, char* argv[])
   for(int i=0;i<nW;i++)
     for(int j=0;j<nH;j++)
        Histo[ImgIn[i][j]]++;
-  
-
-  // for (int i=0; i < nH; i++)
-  //  for (int j=0; j < nW; j++)
-  //    {
-  //      if ( ImgIn[i*nW+j] < S) ImgOut[i*nW+j]=0; else ImgOut[i*nW+j]=255;
-  //    }
 
    ecrire_image_pgm(cNomImgEcrite, Histo, nW, nH);
    free(ImgIn); free(ImgOut);
