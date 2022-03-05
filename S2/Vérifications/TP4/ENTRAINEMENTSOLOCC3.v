@@ -127,6 +127,7 @@ Fixpoint nbc (f : FProp) {struct f} : nat :=
   | (Impl f1 f2) => 1 + (nbc f1) + (nbc f2)
   | (Equ f1 f2) => 1 + (nbc f1) + (nbc f2)
   end.
+
  
 
 
