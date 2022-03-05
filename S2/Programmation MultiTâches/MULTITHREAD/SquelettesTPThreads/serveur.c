@@ -55,14 +55,14 @@ void * fonctionThread (void * params){
   pthread_t actual = pthread_self();
   printf("Démarage thread : %lu\n", actual);
   printf("---------- Utilisation en cours ----------\n");
+  
             int size; 
-            int res2 = recv(clientSocket, &size, sizeof(int), 0);
+            int res2 = recv(infos->, &size, sizeof(int), 0);
             if (res2 == -1) {
                 perror("Erreur réception entier");
             }
             else if (res2 == 0) {
                 printf("Réception impossible, connection close\n");
-                        exit(1);
                         close(clientSocket);
             }
             else {
@@ -76,7 +76,6 @@ void * fonctionThread (void * params){
                 }
                 else if (res2 == 0) {
                     printf("Réception impossible, connection close\n");
-                    exit(1);
                     close(clientSocket);
                 }
                 printf("[SERVEUR/ITERATIF] Nombre d'octet : %i, message reçu : %s\n", res2, message2);
