@@ -25,4 +25,5 @@ Proof.
  apply is_power_S.
  intros.
  simpl.
+
 Qed.
