@@ -37,7 +37,7 @@ int main(int argc, char* argv[])
           tabout[ImgIn[i*nW+j]]++;
       }
       for (int i = 0; i < 256; i++) {
-          fprintf(file_output, "%d\t%d\n", i, tabout[i]);
+          fprintf(file_output, "%d\t%f\n", i, (float)tabout[i]/(float)nTaille);
       }
       fclose(file_output);
   free(ImgIn);

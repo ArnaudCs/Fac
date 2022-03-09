@@ -31,14 +31,17 @@ int main(int argc, char* argv[])
   if((file_output = fopen(cNomTxtEcrite,"w")) == NULL) {
       exit(EXIT_FAILURE);
   };
+
   for (int i=0; i < nH; i++)
     for (int j=0; j < nW; j++)
       {
           tabout[ImgIn[i*nW+j]]++;
       }
-      for (int i = 0; i < 256; i++) {
-          fprintf(file_output, "%d\t%d\n", i, tabout[i]);
-      }
+        float rep = 0;
+        for (int i = 0; i < 256; i++) {
+        rep += ((float)tabout[i]/(float)nTaille);
+        fprintf(file_output, "%d\t%f\n", i, rep);
+        }
       fclose(file_output);
   free(ImgIn);
 
