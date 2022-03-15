@@ -1,5 +1,5 @@
 
-#line 3 "lex.yy.c"
+#line 2 "lex.yy.c"
 
 #define  YY_INT_ALIGNED short int
 
@@ -322,6 +322,9 @@ void yyfree ( void *  );
 #define YY_AT_BOL() (YY_CURRENT_BUFFER_LVALUE->yy_at_bol)
 
 /* Begin user sect3 */
+
+#define yywrap() (/*CONSTCOND*/1)
+#define YY_SKIP_YYWRAP
 typedef flex_uint8_t YY_CHAR;
 
 FILE *yyin = NULL, *yyout = NULL;
@@ -360,10 +363,9 @@ struct yy_trans_info
 	flex_int32_t yy_verify;
 	flex_int32_t yy_nxt;
 	};
-static const flex_int16_t yy_accept[18] =
+static const flex_int16_t yy_accept[8] =
     {   0,
-        0,    0,    4,    2,    2,    1,    1,    1,    1,    0,
-        0,    1,    1,    1,    0,    1,    0
+        1,    1,    4,    2,    1,    1,    0
     } ;
 
 static const YY_CHAR yy_ec[256] =
@@ -372,16 +374,16 @@ static const YY_CHAR yy_ec[256] =
         1,    1,    1,    1,    1,    1,    1,    1,    1,    1,
         1,    1,    1,    1,    1,    1,    1,    1,    1,    1,
         1,    1,    1,    1,    1,    1,    1,    1,    1,    1,
-        1,    1,    3,    1,    3,    4,    1,    5,    6,    6,
-        6,    6,    6,    6,    6,    6,    6,    1,    1,    1,
-        1,    1,    1,    1,    1,    1,    1,    7,    7,    1,
+        1,    1,    1,    1,    1,    1,    1,    3,    1,    1,
+        1,    1,    1,    1,    1,    1,    1,    1,    1,    1,
+        1,    1,    1,    3,    1,    1,    1,    1,    1,    1,
         1,    1,    1,    1,    1,    1,    1,    1,    1,    1,
         1,    1,    1,    1,    1,    1,    1,    1,    1,    1,
-        1,    1,    1,    1,    1,    1,    1,    1,    1,    7,
+        1,    1,    1,    1,    1,    1,    3,    3,    3,    3,
 
-        7,    8,    1,    1,    1,    1,    1,    1,    1,    1,
-        1,    1,    1,    1,    1,    1,    1,    1,    1,    1,
-        1,    1,    1,    1,    1,    1,    1,    1,    1,    1,
+        3,    3,    3,    3,    3,    3,    3,    3,    3,    3,
+        3,    3,    3,    3,    3,    3,    3,    3,    3,    3,
+        3,    3,    1,    1,    1,    1,    1,    1,    1,    1,
         1,    1,    1,    1,    1,    1,    1,    1,    1,    1,
         1,    1,    1,    1,    1,    1,    1,    1,    1,    1,
         1,    1,    1,    1,    1,    1,    1,    1,    1,    1,
@@ -398,37 +400,29 @@ static const YY_CHAR yy_ec[256] =
         1,    1,    1,    1,    1
     } ;
 
-static const YY_CHAR yy_meta[9] =
+static const YY_CHAR yy_meta[4] =
     {   0,
-        1,    1,    2,    3,    4,    4,    1,    1
+        1,    1,    2
     } ;
 
-static const flex_int16_t yy_base[21] =
+static const flex_int16_t yy_base[9] =
     {   0,
-        0,    0,   29,   30,    0,    5,    9,    9,   13,   24,
-       24,   30,    0,    0,   23,   17,   30,   19,   17,   20
+        0,    0,    5,    6,    0,    0,    6,    2
     } ;
 
-static const flex_int16_t yy_def[21] =
+static const flex_int16_t yy_def[9] =
     {   0,
-       17,    1,   17,   17,   18,   17,    6,   18,    8,   19,
-       20,   17,    7,    9,   20,   15,    0,   17,   17,   17
+        7,    1,    7,    7,    8,    8,    0,    7
     } ;
 
-static const flex_int16_t yy_nxt[39] =
+static const flex_int16_t yy_nxt[10] =
     {   0,
-        4,    4,    4,    5,    6,    7,    4,    4,    9,   10,
-       10,   11,   12,   13,   13,   11,   12,   14,   14,   10,
-       10,   16,    8,   16,   12,   17,   15,    9,   17,    3,
-       17,   17,   17,   17,   17,   17,   17,   17
+        4,    4,    5,    6,    7,    3,    7,    7,    7
     } ;
 
-static const flex_int16_t yy_chk[39] =
+static const flex_int16_t yy_chk[10] =
     {   0,
-        1,    1,    1,    1,    1,    1,    1,    1,    6,    6,
-        6,    6,    6,    7,    7,    8,    8,    9,    9,   19,
-       19,   20,   18,   20,   16,   15,   11,   10,    3,   17,
-       17,   17,   17,   17,   17,   17,   17,   17
+        1,    1,    1,    8,    3,    7,    7,    7,    7
     } ;
 
 static yy_state_type yy_last_accepting_state;
@@ -445,10 +439,29 @@ int yy_flex_debug = 0;
 #define YY_MORE_ADJ 0
 #define YY_RESTORE_YY_MORE_OFFSET
 char *yytext;
-#line 1 "calcdesc.l"
-#line 2 "calcdesc.l"
+#line 1 "tradauto.l"
+#line 2 "tradauto.l"
 #include <stdio.h>
 #include <math.h>
+#include <ctype.h>
+#include "arbin.h"
+
+// | < concaténation < * < ()
+// [a-z], @ : epsilon, 0 : mot vide
+
+/*
+ligne -> S'\n'
+S -> E X
+X -> '|' E X | @
+E -> T R
+R -> E | @
+T -> F Y
+Y -> * Y | @
+F -> '(' E ')' | BASE
+
+BASE = [a-z0@]
+*/
+
 struct YYData {
     char *name;
     int val;
@@ -463,8 +476,8 @@ enum Token {
 };
 
 double yylval;
-#line 467 "lex.yy.c"
-#line 468 "lex.yy.c"
+#line 479 "lex.yy.c"
+#line 480 "lex.yy.c"
 
 #define INITIAL 0
 
@@ -681,9 +694,9 @@ YY_DECL
 		}
 
 	{
-#line 19 "calcdesc.l"
+#line 39 "tradauto.l"
 
-#line 687 "lex.yy.c"
+#line 699 "lex.yy.c"
 
 	while ( /*CONSTCOND*/1 )		/* loops until end-of-file is reached */
 		{
@@ -710,13 +723,13 @@ yy_match:
 			while ( yy_chk[yy_base[yy_current_state] + yy_c] != yy_current_state )
 				{
 				yy_current_state = (int) yy_def[yy_current_state];
-				if ( yy_current_state >= 18 )
+				if ( yy_current_state >= 8 )
 					yy_c = yy_meta[yy_c];
 				}
 			yy_current_state = yy_nxt[yy_base[yy_current_state] + yy_c];
 			++yy_cp;
 			}
-		while ( yy_base[yy_current_state] != 30 );
+		while ( yy_base[yy_current_state] != 6 );
 
 yy_find_action:
 		yy_act = yy_accept[yy_current_state];
@@ -742,21 +755,21 @@ do_action:	/* This label is used only to access EOF actions. */
 
 case 1:
 YY_RULE_SETUP
-#line 20 "calcdesc.l"
+#line 40 "tradauto.l"
 { yylval = atof(yytext); yymkdata(LITFLOT) }
 	YY_BREAK
 case 2:
 /* rule 2 can match eol */
 YY_RULE_SETUP
-#line 21 "calcdesc.l"
+#line 41 "tradauto.l"
 { return yytext[0]; }
 	YY_BREAK
 case 3:
 YY_RULE_SETUP
-#line 22 "calcdesc.l"
+#line 42 "tradauto.l"
 ECHO;
 	YY_BREAK
-#line 760 "lex.yy.c"
+#line 772 "lex.yy.c"
 case YY_STATE_EOF(INITIAL):
 	yyterminate();
 
@@ -1053,7 +1066,7 @@ static int yy_get_next_buffer (void)
 		while ( yy_chk[yy_base[yy_current_state] + yy_c] != yy_current_state )
 			{
 			yy_current_state = (int) yy_def[yy_current_state];
-			if ( yy_current_state >= 18 )
+			if ( yy_current_state >= 8 )
 				yy_c = yy_meta[yy_c];
 			}
 		yy_current_state = yy_nxt[yy_base[yy_current_state] + yy_c];
@@ -1081,11 +1094,11 @@ static int yy_get_next_buffer (void)
 	while ( yy_chk[yy_base[yy_current_state] + yy_c] != yy_current_state )
 		{
 		yy_current_state = (int) yy_def[yy_current_state];
-		if ( yy_current_state >= 18 )
+		if ( yy_current_state >= 8 )
 			yy_c = yy_meta[yy_c];
 		}
 	yy_current_state = yy_nxt[yy_base[yy_current_state] + yy_c];
-	yy_is_jam = (yy_current_state == 17);
+	yy_is_jam = (yy_current_state == 7);
 
 		return yy_is_jam ? 0 : yy_current_state;
 }
@@ -1761,75 +1774,68 @@ void yyfree (void * ptr )
 
 #define YYTABLES_NAME "yytables"
 
-#line 22 "calcdesc.l"
+#line 42 "tradauto.l"
 
 
-#define AVANCER { jeton = yylex(); numcar++; }
-#define TEST_AVANCE(prevu) { if (jeton == (prevu)) AVANCER else ERREUR_SYNTAXE }
-#define ERREUR_SYNTAXE { printf("\nMot non reconnu : %s\n", yytext); exit(1); } 
+#define AVANCER {jeton=getchar();numcar++;}
+#define TEST_AVANCE(prevu) {if (jeton==(prevu)) AVANCER else ERREUR_SYNTAXE}
+#define ERREUR_SYNTAXE {printf("\nMot non reconnu : erreur de syntaxe \
+au caractère numéro %d, de jeton %d \n",numcar,jeton); exit(1);}
+#define INVITE "Veuillez saisir une expression numérique SVP (q pour quitter) : "
 
-double E(); double R(double gauche); double T(); double S(double left); double F(); double G(); double H(double left);
-
+Arbin S(); Arbin X(Arbin g); Arbin E(); Arbin R(Arbin g); Arbin T(); Arbin Y(Arbin g); Arbin F(); void ligne();
 int jeton;                                  /* caractère courant du flot d'entrée */
 int numcar = 0;                             /* numero du caractère courant (jeton) */
 
-double E() {                                   /* regle : E->TR */    
-    return R(T());
+Arbin S() {
+    return X(E());
 }
+Arbin X(Arbin g) {
+            ab_afficher(g);
 
-double R(double left) {                           /* regle : R->+TR|-TR|epsilon */
-    if (jeton == '+') {                     
+    if (jeton == '|') {
         AVANCER
-        return R(left + T());
-    }
-    if (jeton == '-') {                     
-        AVANCER
-        return R(left - T());
-    }
-    return left;
-}
-
-double T() {                                   /* regle : T->FS */
-    return S(F());
-}
-
-double S(double left) {                           /* regle : S->*FS|/FS|epsilon */
-    if (jeton == '*') {                     
-        AVANCER
-        return S(left * F());
-    }
-    if (jeton == '/') {
-        AVANCER
-        return S(left / F());
-    }
-    return left;
-}
-
-double F() {                                    /* regle : F->GH */
-    return H(G());
-}
-
-double H(double left) {                         /* regle : ^GH|epsilon */
-    if (jeton == '^') {
-        AVANCER 
-        double v = pow(left, H(G()));
-        return v;
-    }
-    return left;
-}
-
-double G() {                                   /* regle : G->(E)|0|1|...|9 */
-    if (jeton == '(') {                     
-        AVANCER
-        int res = E();
-        TEST_AVANCE(')')
-        return res;
+        return X(ab_construire('|',g,E()));
     }
     else {
-        if (jeton == LITFLOT) {
-            double val = yylval;
+        return g;
+    }
+}
+Arbin E() {
+    return R(T());
+}
+Arbin R(Arbin g) {
+    if (jeton == '0' || jeton =='@' || islower(jeton) || jeton == '(') {
+        return R(ab_construire('.',g,T()));
+    }
+    else {
+        return g;
+    }
+}
+Arbin T() {
+    return Y(F());
+}
+Arbin Y(Arbin g) {
+    if (jeton == '*') {
+        AVANCER
+        return Y(ab_construire('*',g,NULL));
+    }
+    else {
+        return g;
+    }
+}
+Arbin F() {
+    if (jeton == '(') {
+        AVANCER
+        Arbin a = E();
+        TEST_AVANCE(')');
+        return a;
+    }
+    else {
+        if (jeton == '0' || jeton =='@' || islower(jeton)) {
+            Arbin a = ab_construire(jeton,NULL,NULL);
             AVANCER
-            return val;
+            return a;
         }
         else {
             ERREUR_SYNTAXE
@@ -1837,15 +1843,18 @@ double G() {                                   /* regle : G->(E)|0|1|...|9 */
     }
 }
 
-int main(int argc, char **argv) {
-    AVANCER
-    double result = E();                    /* axiome */
-    if (jeton == '\n') {                    /* expression reconnue et rien après */
-        printf("Mot reconnu. Résultat: %f\n", result); 
-    }
-    else {
-        ERREUR_SYNTAXE                      /* expression reconnue mais il reste des car */
-    }
-    return 0;
+void ligne() {
+    Arbin a = S();
+    TEST_AVANCE('\n')
+    printf("Arbre binaire associé :\n");
+    ab_afficher(a);
+}
+
+int main(){
+    printf(INVITE);
+    numcar=0;
+    AVANCER;
+    ligne();
+    return 0; /* ne retourne jamais que par X */ 
 }
 

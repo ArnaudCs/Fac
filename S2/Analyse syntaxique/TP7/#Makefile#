@@ -11,4 +11,4 @@ default: $(BIN)
 
 bin/tradauto: $(SRC:%.l=%.c)
 	$(DIR_GUARD)
-	$(CC) $(CFLAGS) -o $@ lex.yy.c arbin.o
+	$(CC) $(CFLAGS) -o $@ lex.yy.c -lfl -lm
