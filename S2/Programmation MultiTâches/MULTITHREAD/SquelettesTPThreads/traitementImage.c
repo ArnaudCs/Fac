@@ -4,59 +4,49 @@
 #include <unistd.h>
 #include "calcul.h"
 
-// structure qui regroupe les variables partagées entre les threads.
+// structure qui regroupe les variables partagï¿½es entre les threads.
 struct varPartagees {
   int nbZones;
-  int * di; // le tableau indiqué dans l'énoncé
-
-  ... //
-
+  int * di; // le tableau indiquï¿½ dans l'ï¿½nonce
+  pthread_cont_t *cond;
+  pthread_mutex_t lock;
 };
 
-// structure qui regroupe les paramètres d'un thread
+// structure qui regroupe les paramï¿½tres d'un thread
 struct params {
-
-  int idThread; // cet entier correspond au numéro de traitement associé à un thread
-  
+  int idThread; // cet entier correspond au numï¿½ro de traitement associï¿½ ï¿½ un thread
   struct varPartagees * vPartage;
-
-
 };
 
-// fonction associée à chaque thread secondaire à créer.
+typedef struct params Params;
+typedef struct varPartagees Shared;
+
+// fonction associÃ©e Ã  chaque thread secondaire Ã  crÃ©er.
 
 void * traitement (void * p) {
+  Params *args = (Params *)p;
+  Shared *vPartage = args -> vPartage;
 
-  struct params * args = (struct params *) p;
-  struct  varPartagees *  vPartage = args -> vPartage;
-
-  ...
+  printf("Traitement nÂ°%i de %i zones \n", args->idThread, vPartage->nbZones);
 
   for(int i = 1; i <= vPartage -> nbZones; i++){
-
-    ...
-    
-    if( args -> idThread != 1){ // le premier traitement n'attent personne
-      
-      ...
-      while(...){
+    pthread_mutex_lock(&vPartage->lock);
+    if(args->idThread > 0) {
+            if(vPartage->di[args->idThread - 1] <= vPartage->nbZones && 
+                    vPartage->di[args->idThread - 1] < i + 1) {
+                pthread_cond_wait(&vPartage->cond[args->idThread - 1], &vPartage->lock);
+            }
+        }
+        
+      while(){
    	// attente fin traitement sur la zone i 
       }
     }
-
-    ...
-
-      // dans cette partie, le traitement de la zone i est à faire en faisant une simulation d'un long calcul (appel a calcul(...)
-    ...
-    
-      // a la fin du traitement d'une zone, le signaler pour qu'un thread en attente se réveille. 
+    // dans cette partie, le traitement de la zone i est ï¿½ faire en faisant une simulation d'un long calcul (appel a calcul(...)
+    // a la fin du traitement d'une zone, le signaler pour qu'un thread en attente se rï¿½veille. 
       
- 
   pthread_exit(NULL); 
 }
-
-
-
 
 int main(int argc, char * argv[]){
   
@@ -66,23 +56,20 @@ int main(int argc, char * argv[]){
     exit(1);
   }
 
- 
-   // initialisations 
+  // initialisations 
   pthread_t threads[atoi(argv[1])];
   struct params tabParams[atoi(argv[1])];
 
   struct varPartagees vPartage;
 
-  ...
   vPartage.nbZones =  atoi(argv[2]);
-  ...
   
   srand(atoi(argv[1]));  // initialisation de rand pour la simulation de longs calculs
  
-  // création des threards 
+  // crÃ©ation des threards 
   for (int i = 0; i < atoi(argv[1]); i++){
-    tabParams[i].idThread = ...
-    tabParams[i].vPartage = ... 
+    tabParams[i].idThread = ;
+    tabParams[i].vPartage = ; 
     if (pthread_create(&threads[i], NULL, ...) != 0){
       perror("erreur creation thread");
       exit(1);
@@ -93,12 +80,11 @@ int main(int argc, char * argv[]){
   // attente de la fin des  threards. Partie obligatoire 
   for (int i = 0; i < atoi(argv[1]); i++){
 
-    ...
   }
   cout << "thread principal : fin de tous les threads secondaires" << endl;
 
-  // libérer les ressources avant terminaison 
-  ...
+  // libï¿½rer les ressources avant terminaison 
+for (int i = 0; i < atoi(argv[1]; ))
   return 1;
 }
  
