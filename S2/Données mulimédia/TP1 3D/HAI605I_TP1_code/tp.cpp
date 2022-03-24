@@ -28,6 +28,9 @@
 #include "src/Vec3.h"
 #include "src/Camera.h"
 
+int nX = 20;
+int nY = 20;
+
 enum DisplayMode{ WIRE=0, SOLID=1, LIGHTED_WIRE=2, LIGHTED=3 };
 
 struct Triangle {
@@ -83,12 +86,41 @@ static int lastX=0, lastY=0, lastZoom=0;
 static bool fullScreen = false;
 
 //To complete
-void setUnitSphere( Mesh & o_mesh, int nX=20, int nY=20 )
-{
-
-
+void setUnitSphere(Mesh & o_mesh) {
+//netoyer le mesh
+    o_mesh.vertices.clear();
+    o_mesh.normals.clear();
+    o_mesh.triangles.clear();
+float x, y, z, tet, phi;
+    for (int i = 0; i < nX; i++) {
+        for (int j = 0; j < nY; j++) {
+            tet = i*(2*M_PI)/(nX-1);
+            phi = (j*M_PI/(nY-1))-(M_PI/2);
+            x = cos(tet)*cos(phi);
+            y = sin(tet)*cos(phi);
+            z = sin(phi);
+            Vec3 pts = Vec3(x, y, z);
+            o_mesh.vertices.push_back(pts);
+            o_mesh.normals.push_back(pts/sqrt((x*x)+(y*y)+(z*z)));
+        }
+    }
+    //triangles 
+    for (int i = 0; i < nX; i++) {
+        for (int j = 0; j < nY; j++) {
+            int pt1 = i*nY+j; //on est à l'indice quand on fait le push back
+             if (i!=0 && j!=0) {
+                int pt2 = (i-1)*nY+j;
+                int pt3 = i*nY+(j-1);
+                o_mesh.triangles.push_back(Triangle(pt1,pt2,pt3));
+            }
+            if (i!=(nX-1) && j!=(nY-1)) {
+                int pt4 = (i+1)*nY+j;
+                int pt5 = i*nY+(j+1);
+                o_mesh.triangles.push_back(Triangle(pt1,pt4,pt5));
+            }
+        }
+    }
 }
-
 
 bool saveOFF( const std::string & filename ,
               std::vector< Vec3 > & i_vertices ,
@@ -417,6 +449,18 @@ void key (unsigned char keyPressed, int x, int y) {
 
     case '2': //Toggle unit sphere mesh display
         display_unit_sphere = !display_unit_sphere;
+        break;
+    
+    case '-': //Baisse de 1 le nombre de méridiens et paralèlles
+        nX--;
+        nY--;
+        setUnitSphere(unit_sphere);
+        break;
+
+    case '+': //Augmente de 1 le nombre de méridiens et paralèlles
+        nX++;
+        nY++;
+        setUnitSphere(unit_sphere);
         break;
 
     default:
