@@ -59,23 +59,66 @@ Eval compute in (le_10 15). (* False *)
 Fixpoint insert (e : nat) (l : list nat) {struct l} : list nat :=
  match l with 
   | nil => [e]
-  | h::q => 
+  | h::l1 => 
    match (le_dec e h) with
     | left _ => e::l  (*e<=h*)
-    | right _ => h::(insert e q) 
-   end.
+    | right _ => h::(insert e l1) 
+   end
  end.
 
-Fixpoint 
+Fixpoint isort(l : list nat) : list nat :=
  match l with 
   | nil => nil
-  | h::q => insert h (insert q)
+  | e::l1 => insert e (isort l1)
  end.
 
-Eval compute in (insert 5 [1;2;3]).
+Eval compute in isort [5;4;3;2;1]. (* True *)
 
+(*Exercice 3*)
+Lemma head_is_perm : forall (x1 x2 : nat) (l : list nat), is_perm (x1 :: x2 :: l) (x2 :: x1 :: l).
+Proof.
+ intros.
+ apply (is_perm_indu x3 (x4::l) [x4] l).
+ simpl.
+ apply is_perm_reflex.
+Qed.
 
+Lemma insert_is_perm : forall (x : nat) (l : list nat), is_perm (x::l) (insert x l).
+Proof.
+ intro.
+ induction l.
+ simpl.
+ apply is_perm_reflex.
+ simpl.
+ elim (le_dec x a).
+ intros.
+ apply is_perm_reflex.
+ intros.
+ apply is_perm_S_sym.
+ apply (is_perm_indu a (insert x l) [x] l).
+ simpl.
+ apply is_perm_S_sym.
+ apply IHl.
+Qed.
 
+Lemma insert_is_sorted : forall (x : nat) (l : list nat), is_sorted l -> is_sorted (insert x l).
+Proof.
+ intro.
+ induction l. 
+ intro.
+ simpl.
+ apply is_sorted_un.
+ intro.
+ simpl.
+ elim (le_dec x a).
+ intro.
+ apply is_sorted_S.
+ rewrite <- a0.
+ reflexivity.
+ trivial.
+ intro.
+ 
+ 
 
  
 

@@ -1,14 +1,24 @@
-BIN=bin/tradauto
-SRC=tradauto.l 
-DIR_GUARD=@mkdir -p $(@D)
-CC=gcc
-CFLAGS=-Wall -Iinclude
+CC=gcc 
+CFLAGS=-Wall -Iinclude -ansi
 
-default: $(BIN)
+YACC=bison
+YACCFLAGS=-ydtv
 
-%.c: %.l
-	flex $^
+BIN=bin/expreg	bin/expamb
+DIRG=@mkdir -p $(@D)
 
-bin/tradauto: $(SRC:%.l=%.c)
-	$(DIR_GUARD)
-	$(CC) $(CFLAGS) -o $@ lex.yy.c arbin.o
+all: $(BIN)
+
+clean: 
+	rm y.output y.tab.*
+	rm -rf bin
+
+bin/expreg: expreg.y arbin.c
+	$(DIRG)
+	$(YACC) $(YACCFLAGS) expreg.y
+	$(CC) $(CFLAGS) -o $@ y.tab.c arbin.c
+
+bin/expamb: expamb.y arbin.c
+	$(DIRG)
+	$(YACC) $(YACCFLAGS) expamb.y
+	$(CC) $(CFLAGS) -o $@ y.tab.c arbin.c
