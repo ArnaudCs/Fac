@@ -9,10 +9,9 @@
 // structure qui regroupe les variables partagées entre les threads.
 struct varPartagees {
   int nbZones;
-  int * di; // le tableau indiqué dans l'énoncé
+  int * di;
   pthread_cond_t cond; // Tableau des conditions deux à deux
   pthread_mutex_t lock;
-
 };
 
 // structure qui regroupe les paramétres d'un thread
@@ -31,14 +30,12 @@ void * traitement (void * p) {
   printf("Début traitement n°%i\n",args->idThread);
 
   for(int i = 0; i < vPartage->nbZones; i++){
-   pthread_mutex_lock(&vPartage->lock);
-    //printf("Traitement n°%i de la zone %i \n",args->idThread, i);
+    pthread_mutex_lock(&vPartage->lock);
     
     if(args->idThread != 0){ // le premier traitement n'attent personne
-      while(vPartage->di[i] != args->idThread){
+      while(vPartage->di[i] != args->idThread -1){
         printf("Traitement %i attends la zone %i\n", args->idThread,i);
         pthread_cond_wait(&vPartage->cond, &vPartage->lock);
-        //printf("Traitement %i se réveille et vérouille le verrou\n", args->idThread);
       }
     }
     pthread_mutex_unlock(&vPartage->lock);
@@ -46,7 +43,7 @@ void * traitement (void * p) {
 
     // dans cette partie, le traitement de la zone i est à faire en faisant une simulation d'un long calcul (appel a calcul(...)
     printf("Traitement n°%i de la zone %i \n",args->idThread, i);
-    calcul( 2+ args->idThread *3);
+    calcul(2 + args->idThread);
     printf("Fin du traitement n°%i de la zone %i \n",args->idThread, i);
     pthread_mutex_lock(&vPartage->lock);
     vPartage->di[i] = args->idThread;
@@ -74,9 +71,17 @@ int main(int argc, char * argv[]){
   vPartage.nbZones =  atoi(argv[2]);
   vPartage.di = malloc(atoi(argv[2])*sizeof(int));
 
-  pthread_cond_t cond;
-  pthread_cond_init(&cond, NULL);
-  vPartage.cond = cond;
+  
+  int err;
+  if ((err = pthread_mutex_init(&vPartage.lock, NULL)) != 0) {
+      printf("Erreur : %s\n", strerror(err));
+      exit(EXIT_FAILURE);
+  }
+
+  if ((err = pthread_cond_init(&(vPartage.cond), NULL)) != 0) {
+      printf("Erreur : %s\n", strerror(err));
+      exit(EXIT_FAILURE);
+  }
   
   srand(atoi(argv[1]));  // initialisation de rand pour la simulation de longs calculs
  
@@ -99,11 +104,8 @@ int main(int argc, char * argv[]){
 
 
   // libérer les ressources avant terminaison 
-  for (int i = 0; i < atoi(argv[1]); i++){
-    pthread_cond_destroy(&vPartage.cond);
-  }
+  pthread_cond_destroy(&vPartage.cond);
   pthread_mutex_destroy(&vPartage.lock);
   free(vPartage.di);
   return 0;
 }
- 
