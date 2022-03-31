@@ -4,12 +4,12 @@
 #include <sys/ipc.h>
 #include <sys/sem.h>
 #include <stdlib.h>
+#include "calcul.h"
 /*
  exemple de cr�taion d'un tableau de s�maphores, dont le nombre
  d'�l�ments et la valeur initiale est pass�e en param�tre du
  programme (dans cet exemple, les �lements sont initialis�s � la m�me valeur)
-
- */
+*/
 
 int main(int argc, char * argv[]){
   
@@ -20,25 +20,20 @@ int main(int argc, char * argv[]){
   }
 	  
   int clesem = ftok(argv[3], atoi(argv[4]));
-
   int nbSem = atoi(argv[1]);
-
   int idSem=semget(clesem, nbSem, IPC_CREAT | IPC_EXCL | 0600);
-  
+
   if(idSem == -1){
     perror("erreur semget : ");
     exit(-1);
   }
 
-  printf("sem id : %d \n", idSem);
-
-
+  printf("Identifiant sémaphore : %d \n", idSem);
   
   // initialisation des s�maphores a la valeur pass�e en parametre (faire autrement pour des valeurs diff�rentes ):
  
   ushort tabinit[nbSem];
-  for (int i = 0; i < nbSem; i++) tabinit[i] = atoi(argv[2]);;
- 
+  for (int i = 0; i < nbSem; i++) tabinit[i] = atoi(argv[2]);
 
   union semun{
     int val;
@@ -66,6 +61,29 @@ int main(int argc, char * argv[]){
     printf("%d, ", valinit.array[i]);//affiche les valeurs
   }
   printf("%d ] \n", valinit.array[nbSem-1]);
+
+  //Démarrage du travail : 
+  calcul(1);
+  struct sembuf op[]={
+    {(ushort)0,(short)-1,0},
+    {(ushort)0, (short)0, 0}, 
+  };
+
+  //opération p
+  if(semop(idSem,op,1) == -1){
+      printf("Erreur semop bloquage");
+      exit(1);
+  }
+  //récupération de l'état des sémaphores
+  if(semop(idSem, nbSem, GETALL, valinit) == -1){
+      printf("Erreur lors de la récupération des sémaphores\n");
+      exit(1);
+  }
+  printf("Valeur des sémaphores après l'opération P :\n ");
+  for(int i = 0; i<nbSem-1; i++){
+    printf("%d, ", valinit.array[i]);
+  }
+  printf("%d | \n", valinit)
 
   free(valinit.array);
   return 0;
