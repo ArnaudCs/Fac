@@ -64,7 +64,7 @@ int main(int argc, char * argv[]){
 
   //Démarrage du travail : 
   calcul(1);
-  struct sembuf op[]={
+  struct sembuf op[]={ //toute aporétion PVZ sur un sémaphore est décrite par une structure sembuf
     {(ushort)0,(short)-1,0},
     {(ushort)0, (short)0, 0}, 
   };
@@ -75,15 +75,31 @@ int main(int argc, char * argv[]){
       exit(1);
   }
   //récupération de l'état des sémaphores
-  if(semop(idSem, nbSem, GETALL, valinit) == -1){
+  if(semctl(idSem, nbSem, GETALL, valinit) == -1){ //utilisation de l'intialisation d'un ensemble de sémaphores.
       printf("Erreur lors de la récupération des sémaphores\n");
       exit(1);
   }
   printf("Valeur des sémaphores après l'opération P :\n ");
   for(int i = 0; i<nbSem-1; i++){
-    printf("%d, ", valinit.array[i]);
+    printf("[ %d, ", valinit.array[i]);
   }
-  printf("%d | \n", valinit)
+  printf("%d ] \n", valinit.array[nbSem-1]);
+
+
+  //////////////////////////////////////////////////////////////
+  //opération z
+  if(semop(idSem,op+1,1) == -1){
+      printf("Erreur semop débloquage");
+      exit(1);
+  }
+  printf("Valeur des sémaphores après l'opération Z :\n ");
+  for(int i = 0; i<nbSem-1; i++){
+    printf("[ %d, ", valinit.array[i]);
+  }
+  printf("%d ] \n", valinit.array[nbSem-1]);
+
+  //Destruction des sémaphores
+  if(semctl(idSem, 0, IPC_RMID, NULL) == -1) perror("erreur destruction des sémaphores");
 
   free(valinit.array);
   return 0;
