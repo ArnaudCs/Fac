@@ -23,22 +23,22 @@ int main(int argc, char * argv[]){
     exit(0);
   }
    
-  key_t cle=ftok(argv[1], atoi(argv[2])); //identification de la clé, 
-
+  key_t cle=ftok(argv[1], atoi(argv[2])); //identification de la clé
   if (cle==-1) {
     perror("Erreur ftok : ");
     exit(2);
   }
 
   cout << "ftok : validé" << endl;
-    
-  int msgid = msgget(cle, 0666);
+  
+  int msgid = msgget(cle, 0666); //création ou identification de notre file 0666 pour les droits
   if(msgid==-1) {
     perror("(msgget) : Erreur récupération file : \n");
     exit(2);
   }
   
   cout << "msgget : validé" << endl;
+  
   strMonMsg msg;
   msg.nom = 50;
   msg.etiquette = 10;
@@ -48,6 +48,7 @@ int main(int argc, char * argv[]){
     perror("(msgrcv) : Erreur envoie de message :\n");
     exit(2);
   }
+
   else{
     cout << "Message envoy\n"<<endl;
   } 

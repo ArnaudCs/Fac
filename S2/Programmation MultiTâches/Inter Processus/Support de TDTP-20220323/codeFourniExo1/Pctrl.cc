@@ -24,7 +24,6 @@ int main(int argc, char * argv[]){
   }
 
   key_t cle=ftok(argv[1], atoi(argv[2])); //identification de la clé, 
-
   if (cle==-1) {
     perror("Erreur ftok : ");
     exit(2);
