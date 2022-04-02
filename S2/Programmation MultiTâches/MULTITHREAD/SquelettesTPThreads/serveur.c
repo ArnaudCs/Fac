@@ -15,7 +15,6 @@
 
 int sendTCP(int sock, void* msg, int sizeMsg) {
     int remaining = sizeMsg;
-
     while (remaining > 0) {
         printf("Send remaining : %i\n", remaining);
         int res = send(sock, msg + sizeMsg - remaining, remaining, 0);
@@ -24,13 +23,11 @@ int sendTCP(int sock, void* msg, int sizeMsg) {
         }
         remaining -= res;
     }
-
     return 1;
 }
 
 int recvTCP(int sock, void* msg, int sizeMsg) {
     int remaining = sizeMsg;
-
     while (remaining > 0) {
         printf("Receive remaining : %i\n", remaining);
         int res = recv(sock, msg + sizeMsg - remaining, remaining, 0);
@@ -39,7 +36,6 @@ int recvTCP(int sock, void* msg, int sizeMsg) {
         }
         remaining -= res;
     }
-
     return 1;
 }
 
@@ -60,7 +56,6 @@ void * routine (void * params) {
     int resTailleTCP = recvTCP(arg->idConnexion,&tailleTCP,sizeof(int));
     if (resTailleTCP == -1 || resTailleTCP == 0){
         perror("[Serveur] : pb réception taille msg ou client fermé:\n");
-        
     }
     else
     {
@@ -85,8 +80,9 @@ int main(int argc, char *argv[]) {
         printf("Utilisation : [port_serveur]\n");
         exit(1);
     }
+
     struct sockaddr_in socket_srv;
-    socklen_t size =sizeof(struct sockaddr_in);
+    socklen_t size = sizeof(struct sockaddr_in);
     /* etape 1 : creer une socket d'écoute des demandes de connexions*/
     int srv = socket(PF_INET, SOCK_STREAM, 0);
     if (srv == -1) {
@@ -113,28 +109,30 @@ int main(int argc, char *argv[]) {
     }
     printf("Serveur : socket serveur sur écoute.\n");
 
-printf("###################  PARTIE SERVEUR ITERATIF ######################\n");
-pthread_t threads[3];
-int i=0;
-while (1) {
-    struct sockaddr_in sock_cltTCP;
-    int newConnectionTCP = accept(srv, (struct sockaddr*)&sock_cltTCP, &size);
-    
-    if (newConnectionTCP == -1) {
-        perror("[Serveur] : problème lors de la connection d'un client");
-    }
-    i++;
-    struct paramsFonctionThread *args = malloc(sizeof(struct paramsFonctionThread));
-    args->idConnexion = newConnectionTCP;
-    args->sockCltAdr = sock_cltTCP.sin_addr;
-    args->sockCltPort = sock_cltTCP.sin_port;
+    pthread_t threads[3];
+    int i=0;
+    while (1) {
+        struct sockaddr_in sock_cltTCP;
+        int newConnectionTCP = accept(srv, (struct sockaddr*)&sock_cltTCP, &size);
+        if (newConnectionTCP == -1) {
+            perror("[Serveur] : problème lors de la connection d'un client");
+        }
 
-    if (pthread_create(&threads[i], NULL, routine, args) != 0){
-      perror("erreur creation thread");
-      exit(1);
+        //une fois connecté, on envoi les infos du clients dans la structure
+        //la fonction de création de threads va ensuite récupérer les données du client et c'est elle 
+        //qui va envoyer et répondre aux client (le thread)
+        i++;
+        struct paramsFonctionThread *args = malloc(sizeof(struct paramsFonctionThread));
+        args->idConnexion = newConnectionTCP;
+        args->sockCltAdr = sock_cltTCP.sin_addr;
+        args->sockCltPort = sock_cltTCP.sin_port;
+
+        if (pthread_create(&threads[i], NULL, routine, args) != 0){
+        perror("erreur creation thread");
+        exit(1);
+        }
     }
-    
-  }
+
     close(srv);
     printf("[SERVEUR] Sortie.\n");
     return 0;
