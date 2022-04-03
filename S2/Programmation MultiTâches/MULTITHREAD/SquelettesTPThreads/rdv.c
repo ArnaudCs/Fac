@@ -44,7 +44,7 @@ void * participant (void *p) {
     }
     pthread_mutex_unlock(&args->varPartagee->lock); //on débloque le thread appelant 
     
-    wait = args->idThread + rand() % 3; //on effectue une autre attente
+    wait = rand() % 3; //on effectue une autre attente
     printf("=> [T n°%i] Reprise - Temps : %i secondes.\n", args->idThread, wait * 3); //reprise du calcul
     calcul(wait); // reprise et poursuite de l'execution.
 

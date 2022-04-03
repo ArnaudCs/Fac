@@ -7,6 +7,8 @@
 #include <time.h>
 #include "calcul.h"
 
+pthread_mutex_t mutex = PTHREAD_MUTEX_INITIALIZER;
+
 struct paramsFonctionThread {
   int idThread;
   // si d'autres param�tres, les ajouter ici.
@@ -21,7 +23,7 @@ void * fonctionThread (void * params){
   printf("Démarage thread : %lu\n", actual);
   printf("---------- Utilisation en cours ----------\n");
   calcul(1);
-
+  pthread_mutex_lock(&mutex);
   int j = rand() % 75;
   printf("----------------------------\n");
   printf("| Case du tableau n°3 : %i |\n", tableau[2]);
@@ -30,6 +32,7 @@ void * fonctionThread (void * params){
   tableau[2] = j;
   printf("--- > Case 3 modifiée avec la valeur : %i\n", j);
   printf("Fin d'éxécution : fin du thread : %lu\n", actual);
+  pthread_mutex_unlock(&mutex);
   pthread_exit(NULL);
 }
 
@@ -55,6 +58,8 @@ int main(int argc, char * argv[]){
         pthread_join(threads[j], NULL);
   }
   
+  pthread_mutex_destroy(&mutex);
+
   //affichage du tableau final
   printf("Affichage du tableau final : ");
   printf("(");
