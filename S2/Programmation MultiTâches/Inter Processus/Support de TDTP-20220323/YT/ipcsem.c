@@ -3,7 +3,7 @@
 int Num;
 
 void creersem(key_t cle, int N){
-    NUm = semget(cle, N, 0600 | IPC_CREAT);
+    Num = semget(cle, N, 0600 | IPC_CREAT);
     if(Num == -1){
         perror("Problème lors de la création du sémaphore\n");
     }

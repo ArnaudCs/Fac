@@ -1,4 +1,4 @@
-Parameters A B C : Prop.
+ Parameters A B C : Prop.
 
 Lemma ex1_1 : A -> B -> A.
 Proof.
