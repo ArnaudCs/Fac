@@ -23,15 +23,13 @@ struct params {  // structure pour regrouper les paramètres d'un thread.
 void * participant (void *p) {
     struct params *args = (struct params *) p;
     int wait = args->idThread + rand() % 3; //temps d'attente qui dépend du nombre de thread
-    printf("=> [T n°%i] Démmarage du calcul - Temps : %i secondes\n", args->idThread, wait * 3);
-    // Simulation d'un long calcul pour le travail avant RdV
-    calcul(wait); // C'est un exemple.
+    printf("[Thread n°%i] Démmarage du calcul\n", args->idThread);
+    calcul(wait); // Simulation d'un long calcul pour le travail avant RdV
 
     // RdV 
     pthread_mutex_lock(&args->varPartagee->lock); //on bloque pour que le thread concerné fasse ses opérations
     args->varPartagee->sharedData += 1; //on ajout + 1 à l'int qui joue le rôle de ressource partagée
-    printf("=> [T n°%i] %i/%i.\n", args->idThread, args->varPartagee->sharedData, args->n);
-    //au dessus, on affiche l'id du thread en cours, puis l'int / par n (un autre int de la structure, le nombre de threaads secondaires)
+    printf("[Thread n°%i] %i/%i.\n", args->idThread, args->varPartagee->sharedData, args->n);
     if (args->varPartagee->sharedData < args->n) {  // attention : le dernier arrivé ne doit pas attendre. Il doit réveiller tous les autres.
         pthread_cond_wait(&args->varPartagee->cond, &args->varPartagee->lock); //on attend que la condition soit rempli et elle serait 
         //remplie une fois le pthread broadcast affiché
@@ -45,7 +43,7 @@ void * participant (void *p) {
     pthread_mutex_unlock(&args->varPartagee->lock); //on débloque le thread appelant 
     
     wait = rand() % 3; //on effectue une autre attente
-    printf("=> [T n°%i] Reprise - Temps : %i secondes.\n", args->idThread, wait * 3); //reprise du calcul
+    printf("[Thread n°%i] Reprise du travail\n", args->idThread); //reprise du calcul
     calcul(wait); // reprise et poursuite de l'execution.
 
     pthread_exit(NULL); // fortement recommandé.
@@ -63,20 +61,19 @@ int main(int argc, char *argv[]){
     struct predicatRdv predicat; //structure qui contient les données partagées
     predicat.sharedData = 0; //on initialise l'int partagée à 0
 
-    int err; //on gère le cas d'erreur des initialisation du mutex et de la cond
-    //pas conseillé, vaut mieux faire pthread_mutex_t = PTHREAD_MUTEX_INITIALIZER;
-    if ((err = pthread_mutex_init(&predicat.lock, NULL)) != 0) {
-        printf("Erreur : %s\n", strerror(err));
+    int res;
+    if ((res = pthread_mutex_init(&predicat.lock, NULL)) != 0) {
+        printf("Erreur : %s\n", strerror(res));
         exit(EXIT_FAILURE);
     }
-    if ((err = pthread_cond_init(&predicat.cond, NULL)) != 0) {
-        printf("Erreur : %s\n", strerror(err));
+    if ((res = pthread_cond_init(&predicat.cond, NULL)) != 0) {
+        printf("Erreur : %s\n", strerror(res));
         exit(EXIT_FAILURE);
     }
 
     srand(atoi(argv[1]));  // initialisation de rand pour la simulation de longs calculs
     
-    // Création des threards 
+    // Création des threads 
     for (int i = 0; i < atoi(argv[1]); i++){
         tabParams[i].idThread = i + 1;
         tabParams[i].n = atoi(argv[1]);
@@ -89,7 +86,7 @@ int main(int argc, char *argv[]){
         }
     }
 
-    // Attente de la fin des  threards. Partie obligatoire 
+    // Attente de la fin des  threads. Partie obligatoire 
     for (int i = 0; i < atoi(argv[1]); i++) { //attente de la fin de tous les threads crées
         pthread_join(threads[i], NULL);
     }

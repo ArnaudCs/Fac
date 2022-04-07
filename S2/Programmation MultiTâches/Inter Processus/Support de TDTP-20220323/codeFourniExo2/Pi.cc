@@ -62,7 +62,7 @@ int main(int argc, char * argv[]){
     printf("\033[%im[%i] Valeur actuelle de la sémaphore : %i\n\033[0m", 1 + 31, 1, semValue);
 
     // Tant que semaphores[i] n'est pas à 0, on attend.
-    if (semop(semid, op + 1, 1) == -1)
+    if (semop(semid, op + 1, 1) == -1) // si on est à 0 alors le semod renverra une bonne valeur et non -1
         exit(EXIT_FAILURE);
 
     return 0;

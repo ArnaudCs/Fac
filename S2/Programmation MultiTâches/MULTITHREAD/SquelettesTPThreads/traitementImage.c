@@ -8,7 +8,7 @@
 
 struct varPartagees { // structure qui regroupe les variables partagées entre les threads.
   int nbZones; //nombres de zones données en paramètre, initialisation dans le main
-  int * di; //?
+  int * di; 
   pthread_cond_t cond; // Tableau des conditions deux à deux (pas initialisé)
   pthread_mutex_t lock; //création du mutex (pas initialisé)
 };
@@ -89,7 +89,6 @@ int main(int argc, char * argv[]){
     }
   }
 
-  
   // attente de la fin des  threards. Partie obligatoire 
   for (int i = 0; i < atoi(argv[1]); i++){ //attente de la fin de chaque threads
     pthread_join(threads[i], NULL);

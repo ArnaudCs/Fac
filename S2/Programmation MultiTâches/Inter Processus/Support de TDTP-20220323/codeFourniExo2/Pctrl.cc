@@ -27,13 +27,13 @@ int main(int argc, char * argv[]){
         
     int nbSem = atoi(argv[1]);
 
-    int idSem=semget(clesem, nbSem, IPC_CREAT | IPC_EXCL | 0600);
+    int idSem=semget(clesem, nbSem, IPC_CREAT | IPC_EXCL | 0600); // création du tableau de sémaphores
     if(idSem == -1){
         perror("erreur semget : ");
         exit(-1);
     }
 
-    printf("sem id : %d \n", idSem);
+    printf("sem id : %d \n", idSem); //affichage de l'id du tableau de sémaphore
 
     // initialisation des sémaphores a la valeur passée en parametre (faire autrement pour des valeurs différentes ):
     ushort tabinit[nbSem];
@@ -48,7 +48,7 @@ int main(int argc, char * argv[]){
 
     valinit.array = tabinit;
 
-    if (semctl(idSem, nbSem, SETALL, valinit) == -1){
+    if (semctl(idSem, nbSem, SETALL, valinit) == -1){ // initialisation des sémaphores
         perror("erreur initialisation sémaphores : ");
         exit(1);
     }
@@ -67,7 +67,7 @@ int main(int argc, char * argv[]){
     }
     printf("%d ] \n", valinit.array[nbSem-1]);
     
-    struct sembuf op[] = {{0,0,0}};  
+    struct sembuf op[] = {{0,0,0}};  // tableau des opérations
     if (semop(idSem, op, 1) == -1) {
         perror("Erreur op : ");
     }
