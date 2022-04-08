@@ -7,9 +7,8 @@
 
 struct prodcons {
     int buffer [BUFFER_SIZE ]; /* the actual data */
-    int read_pos, write_pos; /* positions for read and write */
+    int read_pos, write_pos; /* position de la lecture et de l'écriture */
     pthread_mutex_t lock; /* mutex ensuring exclusive */
-    /* access to buffer */
     pthread_cond_t notempty; /* signaled when buffer is not empty */
     pthread_cond_t notfull; /* signaled when buffer is not full */
 } buffer;
@@ -88,5 +87,8 @@ int main (){
     pthread_join (th_p, &retval);
     pthread_join (th_c, &retval);
     // remarque : destruction `a faire ici.
+    //pthread_mutex_destroy(&prodcons->lock);
+    //pthread_cond_destroy(&prodcons->notempty);
+    //pthread_cond_destroy(&prodcons->notfull);
     return 0;
 }
