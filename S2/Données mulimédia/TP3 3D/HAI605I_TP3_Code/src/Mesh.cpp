@@ -105,8 +105,13 @@ void Mesh::drawTransformedMesh( SkeletonTransformation & transfo ) const {
         // you should use the skinning weights to blend the transformations of the vertex position by the bones.
         // to update the position use the weight and the bone transformation
         // for each bone p'=R*p+t
-        new_positions[ i ] = p;
-
+        new_positions[i] = Vec3(0, 0, 0);
+        for (size_t j = 0; j < transfo.bone_transformations.size(); ++j)
+        {
+            BoneTransformation &bone = transfo.bone_transformations[j];
+            // wij * (r * p + t)
+            new_positions[i] += vertices[i].weights[j] * (bone.world_space_rotation * p + bone.world_space_translation);
+        }
     }
     //---------------------------------------------------//
     //---------------------------------------------------//
