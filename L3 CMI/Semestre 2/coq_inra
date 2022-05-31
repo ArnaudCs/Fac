@@ -1,0 +1,159 @@
+Parameters A B C: Prop.
+ 
+Goal A-> B -> A.
+Proof.
+intros .
+assumption.
+Qed.
+
+
+
+
+
+Goal A /\ B -> A.
+Proof.
+intros .
+elim H;intros.
+assumption.
+Qed.
+
+Goal A-> B \/ A.
+Proof.
+intros .
+right.
+assumption.
+Qed.
+
+Goal (A\/B)-> (A->C) ->(B->C)->C.
+Proof.
+intros .
+elim H;intros.
+apply (H0 H2).
+apply (H1 H2).
+Qed.
+
+
+Goal A-> False -> ~ A.
+Proof.
+intros.
+elimtype False .
+assumption. 
+Qed.
+
+Goal False -> A.
+Proof.
+intro.
+elimtype False .
+assumption. 
+Qed.
+
+
+Goal (A<->B)-> (A->B).
+Proof.
+intros.
+elim H.
+intros.
+apply ( H1 H0).
+Qed.
+
+
+
+
+
+Goal (A<->B)-> (B->A).
+Proof.
+intros.
+elim H.
+intros.
+apply ( H2 H0).
+Qed.
+
+
+
+
+Goal (A->B)-> (B->A) -> (A<->B).
+Proof.
+intros.
+split.
+assumption.
+assumption.
+Qed.
+
+
+Parameter E :Set .
+Parameters Q P :E-> Prop. 
+
+Goal (forall x : E, (P x) ->  (exists y : E , P(y) \/ Q(y))).
+Proof.
+intros.
+exists x.
+left.
+assumption.
+Qed.
+
+
+Goal (exists x : E, (P x) \/ (Q x))-> (exists x : E,(P x) ) \/ ( exists x : E,(Q x)).
+Proof.
+intros.
+
+elim H;intros.
+elim H0.
+left.
+exists x.
+assumption.
+right.
+exists x.
+assumption.
+Qed.
+
+
+Goal ((forall x : E, (P x)) /\ (forall x : E, Q x))-> (forall x : E, (P x)  /\ (Q x)).
+Proof.
+intros.
+elim H;intros.
+split.
+2:
+apply H1.
+apply H0.
+Qed.
+
+
+
+Goal  (forall x : E, (P x)  /\ (Q x)) -> ((forall x : E, (P x)) /\ (forall x : E, (Q x))).
+Proof.
+intros.
+split;intros;apply H.
+Qed.
+
+
+
+
+Goal (forall x : E, ~(P x))-> ~(exists x : E, (P x) ).
+Proof.
+intro.
+intro.
+elim H0.
+apply H .
+Qed.
+
+Require Import Classical.
+
+Goal ~(forall x : E, (P x))-> (exists x : E, ~(P x) ).
+Proof.
+intros.
+apply NNPP.
+intro.
+elimtype False ;
+apply H.
+
+intro.
+apply NNPP.
+intro.
+elimtype False ;
+apply H0.
+exists x.
+assumption.
+Qed.  
+
+
+
